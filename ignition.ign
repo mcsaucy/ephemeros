@@ -1,17 +1,13 @@
 {
   "ignition": {
-    "config": {
-      "replace": {
-        "source": null,
-        "verification": {}
-      }
-    },
+    "config": {},
     "security": {
       "tls": {}
     },
     "timeouts": {},
-    "version": "3.0.0"
+    "version": "2.3.0"
   },
+  "networkd": {},
   "passwd": {
     "users": [
       {
@@ -21,5 +17,7 @@
         ]
       }
     ]
-  }
+  },
+  "storage": {},
+  "systemd": {}
 }
