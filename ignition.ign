@@ -22,6 +22,25 @@
     "files": [
       {
         "filesystem": "root",
+        "overwrite": true,
+        "path": "/etc/selinux/config",
+        "contents": {
+          "source": "data:,SELINUX%3Dpermissive%0ASELINUXTYPE%3Dtargeted",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/hostname",
+        "contents": {
+          "source": "data:,node0",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "root",
         "group": {
           "name": "root"
         },
