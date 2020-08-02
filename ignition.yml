@@ -3,3 +3,49 @@ passwd:
     - name: core
       ssh_authorized_keys:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCgakqOKbhaZe7ku2SOmHCrOCeAx//4PQy/nB6jSqIv94yDcyTcnxlJGhcoWdDFUzesFSYLvO63qgm5oA7ApFw413+R/M4FKuq4afhakSn8srthpW1gwI148hF+a8ugcz6h+COXEzOBdJLE0EUGcvKlI79+oF3h/egoO/2gLH0Pi5q5WQxkNXHBLUhZX4jU6uwS22ot4ThiAFKluB+/Asfvbd8ghZ0RDI6Q7H/yAKMp3E/CgA+xFQoTwybcUMm3e6ACJWD00yRczWapwv9ohaINac0ssym/3bFJZArW7foFgI0pyR56/s/0hWaGnA/nsTTHWs/HQ+324opm/a+908zv"
+storage:
+  files:
+    - path: "/opt/bin/k3s"
+      contents:
+        remote:
+            url: "https://github.com/rancher/k3s/releases/download/v1.18.6%2Bk3s1/k3s"
+            verification:
+                hash:
+                    function: sha512
+                    sum: 0951e378d9d1525386e3bc5e067d8f256fe4aed16a5827850736ac223cb211213c48278dacf440694715c045673b583647ef0eb9fcf576dd4cc04685e56ee1f5
+      mode: 0755
+      user:
+        name: root
+      group:
+        name: root
+
+systemd:
+  units:
+
+    - name: k3s.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Lightweight Kubernetes
+        Documentation=https://k3s.io
+        After=network-online.target
+
+        [Install]
+        WantedBy=multi-user.target
+
+        [Service]
+        Type=notify
+        KillMode=process
+        Delegate=yes
+        LimitNOFILE=1048576
+        LimitNPROC=infinity
+        LimitCORE=infinity
+        TasksMax=infinity
+        TimeoutStartSec=0
+        Restart=always
+        RestartSec=5s
+        ExecStartPre=-/sbin/modprobe br_netfilter
+        ExecStartPre=-/sbin/modprobe overlay
+        ExecStart=/opt/bin/k3s server \
+          --cluster-init \
+          --cluster-domain example.com

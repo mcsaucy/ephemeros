@@ -18,6 +18,34 @@
       }
     ]
   },
-  "storage": {},
-  "systemd": {}
+  "storage": {
+    "files": [
+      {
+        "filesystem": "root",
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/bin/k3s",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "https://github.com/rancher/k3s/releases/download/v1.18.6%2Bk3s1/k3s",
+          "verification": {
+            "hash": "sha512-0951e378d9d1525386e3bc5e067d8f256fe4aed16a5827850736ac223cb211213c48278dacf440694715c045673b583647ef0eb9fcf576dd4cc04685e56ee1f5"
+          }
+        },
+        "mode": 493
+      }
+    ]
+  },
+  "systemd": {
+    "units": [
+      {
+        "contents": "[Unit]\nDescription=Lightweight Kubernetes\nDocumentation=https://k3s.io\nAfter=network-online.target\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=notify\nKillMode=process\nDelegate=yes\nLimitNOFILE=1048576\nLimitNPROC=infinity\nLimitCORE=infinity\nTasksMax=infinity\nTimeoutStartSec=0\nRestart=always\nRestartSec=5s\nExecStartPre=-/sbin/modprobe br_netfilter\nExecStartPre=-/sbin/modprobe overlay\nExecStart=/opt/bin/k3s server \\\n  --cluster-init \\\n  --cluster-domain example.com\n",
+        "enabled": true,
+        "name": "k3s.service"
+      }
+    ]
+  }
 }
