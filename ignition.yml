@@ -54,11 +54,13 @@ systemd:
         TimeoutStartSec=0
         Restart=always
         RestartSec=5s
+        Envinronment=K3S_DATASTORE_ENDPOINT=/secrets/k3s_datastore_endpoint
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
         ExecStart=/opt/bin/k3s server \
           --cluster-init \
-          --cluster-domain example.com
+          --cluster-domain example.com \
+          --token-file /secrets/k3s_token
 
     - name: secrets.mount
       enabled: true
