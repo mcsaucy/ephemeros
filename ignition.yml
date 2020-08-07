@@ -54,7 +54,7 @@ systemd:
         TimeoutStartSec=0
         Restart=always
         RestartSec=5s
-        Environment=K3S_DATASTORE_ENDPOINT=/secrets/k3s_datastore_endpoint
+        EnvironmentFile=/secrets/k3s_env
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
         ExecStart=/opt/bin/k3s server \
@@ -70,8 +70,7 @@ systemd:
         Requires=systemd-journald.service
 
         [Service]
-        Environment=PT_HOST=/secrets/papertrail_host
-        Environment=PT_PORT=/secrets/papertrail_port
+        EnvironmentFile=/secrets/papertrail_env
         ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${PT_HOST}" "${PT_PORT}"'
         TimeoutStartSec=0
         Restart=on-failure
