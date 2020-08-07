@@ -54,13 +54,31 @@ systemd:
         TimeoutStartSec=0
         Restart=always
         RestartSec=5s
-        Envinronment=K3S_DATASTORE_ENDPOINT=/secrets/k3s_datastore_endpoint
+        Environment=K3S_DATASTORE_ENDPOINT=/secrets/k3s_datastore_endpoint
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
         ExecStart=/opt/bin/k3s server \
           --cluster-init \
           --cluster-domain example.com \
           --token-file /secrets/k3s_token
+    - name: papertrail.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Papertrail
+        After=systemd-journald.service
+        Requires=systemd-journald.service
+
+        [Service]
+        Environment=PT_HOST=/secrets/papertrail_host
+        Environment=PT_PORT=/secrets/papertrail_port
+        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${PT_HOST}" "${PT_PORT}"'
+        TimeoutStartSec=0
+        Restart=on-failure
+        RestartSec=5s
+
+        [Install]
+        WantedBy=multi-user.target
 
     - name: secrets.mount
       enabled: true

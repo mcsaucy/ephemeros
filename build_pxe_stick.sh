@@ -82,5 +82,7 @@ SECRETS="$OUT/mountpoint"
 log "Writing some placeholder values to secrets files"
 echo "TODO: update me with something real" > "$SECRETS/k3s_token"
 echo "" > "$SECRETS/k3s_datastore_endpoint"
+echo "" > "$SECRETS/papertrail_host"
+echo "" > "$SECRETS/papertrail_port"
 
 
