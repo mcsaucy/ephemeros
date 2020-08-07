@@ -59,3 +59,19 @@ systemd:
         ExecStart=/opt/bin/k3s server \
           --cluster-init \
           --cluster-domain example.com
+
+    - name: secrets.mount
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Secrets
+
+        [Mount]
+        What=/dev/disk/by-label/secrets
+        Where=/secrets
+        Options=ro
+        DirectoryMode=0700
+
+        [Install]
+        WantedBy=k3s.service
+
