@@ -47,11 +47,15 @@ the git repo itself...
 You can have qemu boot the flash drive for testing purposes. Note that this
 will result in downloading several hundred megabytes each run. To do this use:
 `./qemu_test /dev/sdX`. If you get stuck in the console, then `alt-2` and then
-`quit` should get you out. You can also run it as `NO_CURSES=1 ./qemu_test
-/dev/sdX` if you want your console in a dedicated graphical window rather than
-a terminal.
+`quit` should get you out. You can also run it with `NO_CURSES=1` environment
+variable set if you want your console in a dedicated graphical window rather
+than a terminal:
 
-Then you can just `ssh core@localhost -p 2222`.
+```shell
+NO_CURSES=1 ./qemu_test /dev/sdX
+```
+
+Then you can just `ssh core@localhost -p 2222` when it's done booting.
 
 ## I wanna mess with this
 
