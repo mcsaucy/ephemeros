@@ -53,7 +53,7 @@ function usage_and_die() {
 }
 
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-OUT="$(mktemp -d /tmp/pxe_build_o0rt.cloud_XXXXXX)"
+OUT="$(mktemp -d /tmp/pxe_build_ephemeros_XXXXXX)"
 log "Using $OUT for temp storage"
 
 DISK="$1"
