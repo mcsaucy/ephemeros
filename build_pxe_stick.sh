@@ -11,6 +11,22 @@ function error() {
     echo -e "\e[31m$*\e[0m" >&2
 }
 
+function check_env_vars() {
+    case "" in
+        "$K3S_TOKEN")
+            missing="K3S_TOKEN";;
+        "$PAPERTRAIL_HOST")
+            missing="PAPERTRAIL_HOST";;
+        "$PAPERTRAIL_PORT")
+            missing="PAPERTRAIL_PORT";;
+    esac
+
+    if [[ -n "$missing" ]]; then
+        error "You must set $missing!"
+        usage_and_die
+    fi
+}
+
 function build_ipxe() {
     (
         cd "$OUT"
@@ -27,6 +43,14 @@ function unmount() {
     umount -q "$DISK" "$DISK"? || :
 }
 
+function usage_and_die() {
+    error 'Usage: '
+    error ' PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \\'
+    error ' K3S_TOKEN=secretclusteraccesstoken \\'
+    error ' [K3S_OTHER_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
+    error ' ./build_pxe_stick.sh /dev/sdX'
+    exit 1
+}
 
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 OUT="$(mktemp -d /tmp/pxe_build_o0rt.cloud_XXXXXX)"
@@ -34,9 +58,9 @@ log "Using $OUT for temp storage"
 
 DISK="$1"
 if [[ -z "$DISK" ]]; then
-    error "Usage: build_pxe_stick.sh /dev/sdX"
-    exit 1
+    usage_and_die
 fi
+check_env_vars
 
 if [[ ! -w "$DISK" ]]; then
     error "$DISK is not writeable. Check your privilege, and that it exists."
@@ -59,12 +83,10 @@ log "dd'd image to $DISK" >&2
 
 log "Adding a partition for secrets to $DISK"
 parted "$DISK" mkpart primary ext4 512MB 1GB
+partprobe
 log "We don't know the name of the actual partition we just made is,"
 log "so we're just gonna assume it's ${DISK}1."
 log
-
-partprobe
-
 log "If you're running this on a drive that was previously provisioned with"
 log "this script, you may find a scary message regarding an existing fs. "
 log "This is caused by our parted invocation lining things up just right such"
@@ -79,10 +101,11 @@ log "mounting secrets volume @ $OUT/mountpoint"
 mount "${DISK}1" "$OUT/mountpoint"
 SECRETS="$OUT/mountpoint"
 
-log "Writing some placeholder values to secrets files"
-echo "TODO: update me with something real" > "$SECRETS/k3s_token"
-echo "" > "$SECRETS/k3s_env"
-echo "PT_HOST=" > "$SECRETS/papertrail_env"
-echo "PT_PORT=" >> "$SECRETS/papertrail_env"
+log "Writing environment files in $SECRETS..."
+(
+    umask 0077
+    env | grep "^K3S_" > "$SECRETS/k3s_env"
+    env | grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
+)
 
-
+log "!! DONE !!"

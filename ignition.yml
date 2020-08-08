@@ -60,7 +60,6 @@ systemd:
         ExecStart=/opt/bin/k3s server \
           --cluster-init \
           --cluster-domain example.com \
-          --token-file /secrets/k3s_token
     - name: papertrail.service
       enabled: true
       contents: |
@@ -71,7 +70,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/secrets/papertrail_env
-        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${PT_HOST}" "${PT_PORT}"'
+        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${PAPERTRAIL_HOST}" "${PAPERTRAIL_PORT}"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s
