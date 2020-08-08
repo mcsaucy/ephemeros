@@ -45,20 +45,11 @@ the git repo itself...
 ## Testing with qemu
 
 You can have qemu boot the flash drive for testing purposes. Note that this
-will result in downloading several hundred megabytes each run. I've been using
-the following:
-
-```shell
-sudo qemu-system-x86_64 \
-    -hda /dev/sdX \
-    -smp 2 -m 4096 \
-    --curses \
-    -net nic,model=virtio -net user,hostfwd=tcp::2222-:22
-```
-
-If you get stuck in the console, then alt-2 and then `quit` should get you out.
-You can also flip `--curses` to `--vga virtio` if you want your console in a
-dedicated graphical window rather than a terminal.
+will result in downloading several hundred megabytes each run. To do this use:
+`./qemu_test /dev/sdX`. If you get stuck in the console, then `alt-2` and then
+`quit` should get you out. You can also run it as `NO_CURSES=1 ./qemu_test
+/dev/sdX` if you want your console in a dedicated graphical window rather than
+a terminal.
 
 Then you can just `ssh core@localhost -p 2222`.
 
