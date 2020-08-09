@@ -22,6 +22,7 @@ Pop in a flash drive you don't care about and then run the following:
 ```shell
 sudo \
     PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \
+    UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \
     K3S_TOKEN="you should really set this to something secret" \
     # Other K3S_* env vars you probably want to set \
     ./build_pxe_stick.sh /dev/sdX

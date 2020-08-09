@@ -71,6 +71,16 @@
         "name": "papertrail.service"
       },
       {
+        "contents": "Description=UptimeRobot Heartbeat\nAfter=systemd-journald.service\nRequires=systemd-journald.service\n\n[Service]\nEnvironmentFile=/secrets/uptimerobot_heartbeat_env\nExecStart=/bin/sh -c 'wget --spider \"https://heartbeat.uptimerobot.com/${UPTIMEROBOT_HEARTBEAT_PATH}\" \u003e/dev/null 2\u003e\u00261'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "uptimerobot-heartbeat.service"
+      },
+      {
+        "contents": "[Unit]\nDescription=Run UptimeRobot Heartbeat every 5 minutes\nRequires=uptimerobot-heartbeat.service\n\n[Timer]\nUnit=uptimerobot-heartbeat.service\nOnUnitInactiveSec=5m\nAccuracySec=10s\n\n[Install]\nWantedBy=timers.target\n",
+        "enabled": true,
+        "name": "uptimerobot_heartbeat.timer"
+      },
+      {
         "contents": "[Unit]\nDescription=Secrets\n\n[Mount]\nWhat=/dev/disk/by-label/secrets\nWhere=/secrets\nOptions=ro\nDirectoryMode=0700\n\n[Install]\nWantedBy=k3s.service\n",
         "enabled": true,
         "name": "secrets.mount"

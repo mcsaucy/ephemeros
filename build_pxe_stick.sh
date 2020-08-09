@@ -13,12 +13,12 @@ function error() {
 
 function check_env_vars() {
     case "" in
-        "$K3S_TOKEN")
-            missing="K3S_TOKEN";;
         "$PAPERTRAIL_HOST")
             missing="PAPERTRAIL_HOST";;
         "$PAPERTRAIL_PORT")
             missing="PAPERTRAIL_PORT";;
+        "$UPTIMEROBOT_HEARTBEAT_PATH")
+            missing="UPTIMEROBOT_HEARTBEAT_PATH";;
     esac
 
     if [[ -n "$missing" ]]; then
@@ -46,8 +46,8 @@ function unmount() {
 function usage_and_die() {
     error 'Usage: '
     error ' PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \\'
-    error ' K3S_TOKEN=secretclusteraccesstoken \\'
     error ' [K3S_OTHER_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
+    error ' UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \\'
     error ' ./build_pxe_stick.sh /dev/sdX'
     exit 1
 }
@@ -106,6 +106,7 @@ log "Writing environment files in $SECRETS..."
     umask 0077
     env | grep "^K3S_" > "$SECRETS/k3s_env"
     env | grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
+    env | grep "^UPTIMEROBOT_HEARTBEAT_" > "$SECRETS/uptimerobot_heartbeat_env"
 )
 
 log "!! DONE !!"
