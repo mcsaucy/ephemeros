@@ -27,6 +27,39 @@ function check_env_vars() {
     fi
 }
 
+function git_reference() {
+    repo="$(
+        git remote show -n origin \
+        | grep "Fetch URL:" \
+        | cut -d: -f2,3 \
+        | tr -d " " \
+        | sed "s/git@github/github/" \
+        | sed "s|github.com:|github.com/|" \
+        | sed "s|^github.com|https://github.com|" \
+        | sed "s/.git$//"
+        )"
+    maybe_dirty=""
+    if [[ -n "$(cd "$HERE"; git status --short)" ]]; then
+        maybe_dirty=" (with uncommitted changes)"
+    fi
+    commit="$(cd "$HERE"; git rev-parse --short HEAD || echo "???")" 
+
+    echo "$repo/tree/$commit$maybe_dirty"
+}
+
+function repro() {
+    echo "#!/bin/bash"
+    echo "# @ $(git_reference)"
+    env_patterns=(-e "^K3S_" -e "^PAPERTRAIL_" -e "^UPTIMEROBOT_HEARTBEAT_")
+    echo "env \\"
+    for e in $(env | grep "${env_patterns[@]}" | cut -d= -f1); do
+        printf "  %s=%q \\" "$e" "${!e}"
+        echo # newline
+    done
+    echo "  $0"
+}
+
+
 function build_ipxe() {
     (
         cd "$OUT"
@@ -104,9 +137,12 @@ SECRETS="$OUT/mountpoint"
 log "Writing environment files in $SECRETS..."
 (
     umask 0077
+    # NOTE: if you update these, also update the patterns in `repro`
     env | grep "^K3S_" > "$SECRETS/k3s_env"
     env | grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
     env | grep "^UPTIMEROBOT_HEARTBEAT_" > "$SECRETS/uptimerobot_heartbeat_env"
+
+    repro > "$SECRETS/reproduce.sh"
 )
 
 log "!! DONE !!"
