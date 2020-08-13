@@ -11,7 +11,10 @@ if [[ -n "$NO_CURSES" ]]; then
 fi
 
 sudo qemu-system-x86_64 \
+    -enable-kvm \
+    -runas "$USER" \
+    -cpu host \
     -hda "$1" \
-    -smp 2 -m 4096 \
+    -smp 2 -m 8092 \
     "$displaymode" \
     -net nic,model=virtio -net user,hostfwd=tcp::2222-:22
