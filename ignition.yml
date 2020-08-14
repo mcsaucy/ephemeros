@@ -28,6 +28,10 @@ storage:
         name: root
       group:
         name: root
+  links:
+    - path: "/opt/bin/kubectl"
+      target: "/opt/bin/k3s"
+      hard: false
 
 systemd:
   units:

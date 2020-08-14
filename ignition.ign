@@ -56,6 +56,13 @@
         },
         "mode": 493
       }
+    ],
+    "links": [
+      {
+        "filesystem": "root",
+        "path": "/opt/bin/kubectl",
+        "target": "/opt/bin/k3s"
+      }
     ]
   },
   "systemd": {
