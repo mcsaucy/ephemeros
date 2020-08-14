@@ -65,7 +65,8 @@ function build_ipxe() {
         cd "$OUT"
         git clone git://git.ipxe.org/ipxe.git
         cd ipxe/src
-        make -j "$(nproc)" bin/ipxe.usb EMBED="$HERE/flatcar.ipxe"
+        bash "$HERE/mk_ipxe_script.sh" >"$OUT/generated.ipxe"
+        make -j "$(nproc)" bin/ipxe.usb EMBED="$OUT/generated.ipxe"
         log "Built $PWD/bin/ipxe.usb"
     ) >&2
     echo "$OUT/ipxe/src/bin/ipxe.usb"
