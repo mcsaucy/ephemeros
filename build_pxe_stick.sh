@@ -79,8 +79,8 @@ function unmount() {
 function usage_and_die() {
     error 'Usage: '
     error ' PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \\'
-    error ' [K3S_OTHER_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
     error ' UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \\'
+    error ' [K3S_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
     error ' ./build_pxe_stick.sh /dev/sdX'
     exit 1
 }
