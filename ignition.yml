@@ -43,7 +43,7 @@ systemd:
 
         [Service]
         ExecStart=/bin/bash -c 'hostnamectl set-hostname --static \
-            "$(sed "s/\bhostname=\([^ ]*\)/\\1/" | tr -d "\"")"'
+            "$(grep -o "\bhostname=\([^ ]*\)" /proc/cmdline | cut -d= -f2- | tr -d "\"")"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s
