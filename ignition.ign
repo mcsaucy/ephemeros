@@ -59,7 +59,7 @@
   "systemd": {
     "units": [
       {
-        "contents": "[Unit]\nDescription=Set hostname based upon kernel commandline\n\n[Install]\nExecStart=/bin/bash -c 'hostnamectl set-hostname --static \\\n    \"$(sed \"s/\\bhostname=\\([^ ]*\\)/\\\\1/\" | tr -d \"\\\"\")\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n",
+        "contents": "[Unit]\nDescription=Set hostname based upon kernel commandline\n\n[Install]\nWantedBy=k3s.service\n\n[Service]\nExecStart=/bin/bash -c 'hostnamectl set-hostname --static \\\n    \"$(sed \"s/\\bhostname=\\([^ ]*\\)/\\\\1/\" | tr -d \"\\\"\")\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n",
         "enabled": true,
         "name": "sethostname.service"
       },

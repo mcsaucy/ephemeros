@@ -39,6 +39,9 @@ systemd:
         Description=Set hostname based upon kernel commandline
         
         [Install]
+        WantedBy=k3s.service
+
+        [Service]
         ExecStart=/bin/bash -c 'hostnamectl set-hostname --static \
             "$(sed "s/\bhostname=\([^ ]*\)/\\1/" | tr -d "\"")"'
         TimeoutStartSec=0
