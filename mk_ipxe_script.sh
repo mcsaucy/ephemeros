@@ -10,6 +10,7 @@ kernel \${base-url}/flatcar_production_pxe.vmlinuz \
     initrd=flatcar_production_pxe_image.cpio.gz \
     flatcar.first_boot=1 \
     sshkey=\"$KEY\" \
+    hostname=\"${NODE_HOSTNAME?}\" \
     ignition.config.url=${IGN_PATH:-https://raw.githubusercontent.com/mcsaucy/ephemeros/master/ignition.ign}
 initrd \${base-url}/flatcar_production_pxe_image.cpio.gz
 boot"

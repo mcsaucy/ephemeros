@@ -11,10 +11,6 @@ storage:
         inline: "SELINUX=permissive\nSELINUXTYPE=targeted"
       mode: 0644
       overwrite: true
-    - path: "/etc/hostname"
-      contents:
-          inline: "node0"
-      mode: 0644
     - path: "/opt/bin/k3s"
       contents:
         remote:
@@ -35,6 +31,19 @@ storage:
 
 systemd:
   units:
+
+    - name: sethostname.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Set hostname based upon kernel commandline
+        
+        [Install]
+        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static \
+            "$(sed "s/\bhostname=\([^ ]*\)/\\1/" | tr -d "\"")"'
+        TimeoutStartSec=0
+        Restart=on-failure
+        RestartSec=5s
 
     - name: k3s.service
       enabled: true

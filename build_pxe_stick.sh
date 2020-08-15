@@ -12,19 +12,10 @@ function error() {
 }
 
 function check_env_vars() {
-    case "" in
-        "$PAPERTRAIL_HOST")
-            missing="PAPERTRAIL_HOST";;
-        "$PAPERTRAIL_PORT")
-            missing="PAPERTRAIL_PORT";;
-        "$UPTIMEROBOT_HEARTBEAT_PATH")
-            missing="UPTIMEROBOT_HEARTBEAT_PATH";;
-    esac
-
-    if [[ -n "$missing" ]]; then
-        error "You must set $missing!"
-        usage_and_die
-    fi
+    : "${PAPERTRAIL_HOST?}"
+    : "${PAPERTRAIL_PORT?}"
+    : "${UPTIMEROBOT_HEARTBEAT_PATH?}"
+    : "${NODE_HOSTNAME?}"
 }
 
 function git_reference() {

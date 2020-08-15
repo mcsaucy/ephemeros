@@ -32,15 +32,6 @@
       },
       {
         "filesystem": "root",
-        "path": "/etc/hostname",
-        "contents": {
-          "source": "data:,node0",
-          "verification": {}
-        },
-        "mode": 420
-      },
-      {
-        "filesystem": "root",
         "group": {
           "name": "root"
         },
@@ -67,6 +58,11 @@
   },
   "systemd": {
     "units": [
+      {
+        "contents": "[Unit]\nDescription=Set hostname based upon kernel commandline\n\n[Install]\nExecStart=/bin/bash -c 'hostnamectl set-hostname --static \\\n    \"$(sed \"s/\\bhostname=\\([^ ]*\\)/\\\\1/\" | tr -d \"\\\"\")\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n",
+        "enabled": true,
+        "name": "sethostname.service"
+      },
       {
         "contents": "[Unit]\nDescription=Lightweight Kubernetes\nDocumentation=https://k3s.io\nAfter=network-online.target\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=notify\nKillMode=process\nDelegate=yes\nLimitNOFILE=1048576\nLimitNPROC=infinity\nLimitCORE=infinity\nTasksMax=infinity\nTimeoutStartSec=0\nRestart=always\nRestartSec=5s\nEnvironmentFile=/secrets/k3s_env\nExecStartPre=-/sbin/modprobe br_netfilter\nExecStartPre=-/sbin/modprobe overlay\nExecStart=/opt/bin/k3s server \\\n  --cluster-init \\\n  --cluster-domain example.com \\\n",
         "enabled": true,
