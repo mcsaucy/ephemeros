@@ -51,8 +51,7 @@ systemd:
         WantedBy=k3s.service
 
         [Service]
-        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static \
-            "$(grep -o "\bhostname=\([^ ]*\)" /proc/cmdline | cut -d= -f2- | tr -d "\\"")"'
+        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/opt/bin/k_params hostname)"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s

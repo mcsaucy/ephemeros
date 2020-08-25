@@ -74,7 +74,7 @@
   "systemd": {
     "units": [
       {
-        "contents": "[Unit]\nDescription=Set hostname based upon kernel commandline\n\n[Install]\nWantedBy=k3s.service\n\n[Service]\nExecStart=/bin/bash -c 'hostnamectl set-hostname --static \\\n    \"$(grep -o \"\\bhostname=\\([^ ]*\\)\" /proc/cmdline | cut -d= -f2- | tr -d \"\\\\\"\")\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n",
+        "contents": "[Unit]\nDescription=Set hostname based upon kernel commandline\n\n[Install]\nWantedBy=k3s.service\n\n[Service]\nExecStart=/bin/bash -c 'hostnamectl set-hostname --static \"$(/opt/bin/k_params hostname)\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n",
         "enabled": true,
         "name": "sethostname.service"
       },
