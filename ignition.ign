@@ -46,6 +46,21 @@
           }
         },
         "mode": 493
+      },
+      {
+        "filesystem": "root",
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/bin/k_params",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params",
+          "verification": {}
+        },
+        "mode": 493
       }
     ],
     "links": [
