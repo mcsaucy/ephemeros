@@ -25,7 +25,7 @@ sudo \
     NODE_HOSTNAME=node1337 \
     PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \
     UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \
-    K3S_TOKEN="you should really set this to something secret" \
+    K3S_DATASTORE_ENDPOINT="see the k3s docs" \
     # Other K3S_* env vars you probably want to set \
     ./build_pxe_stick.sh /dev/sdX
 ```
@@ -33,6 +33,58 @@ sudo \
 If you don't specify expected `PAPERTRAIL_*`, `UPTIMEROBOT_*` or `K3S_*`, we'll
 throw up a warning in `build_pxe_stick.sh` and those components won't be
 activated at system runtime.
+
+### What values should be used?
+
+#### `NODE_HOSTNAME`
+
+The bare hostname you want to set for the node, e.g. `node0`. If you don't set
+this, we won't do anything special to automatically set the hostname. 
+
+#### `SSH_KEY_PATH`
+
+Path to a SSH public key, e.g. `$HOME/.ssh/id_rsa.pub` (the default). We need
+this to be something, as otherwise we're entirely the values set when the
+Ignition config is applied
+
+#### `PAPERTRAIL_HOST` and `PAPERTRAIL_PORT`
+
+These values are ripped from the [Papertrail setup page](
+https://papertrailapp.com/systems/setup?type=system&platform=unix). See the bit
+at the top that says "Your logs will go to...". These values seem to be scoped
+to the Papertrail account, rather than an individual sender, so feel free to
+reuse those values across multiple nodes.
+
+#### `UPTIMEROBOT_HEARTBEAT_PATH`
+
+UptimeRobot supports multiple types of monitoring signals. Some of these
+signals are free, but not heartbeat. :(
+
+Unlike with Papertrail, you need dedicated values for each host here. To get
+those, you'll want to:
+
+1.  head to the [UptimeRobot dashboard](
+    https://uptimerobot.com/dashboard#mainDashboard)
+2.  click `+ Add New Monitor` at the top left (sorry, can't link it)
+3.  select monitor type -> "Heartbeat (Beta)" (it's in beta at the time of
+    writing)
+4.  set the "Friendly Name" to the node's hostname
+5.  set a monitoring inverval of "every 5 minutes"
+
+That'll kick out a URL like `https://heartbeat.uptimerobot.com/BUNCH_OF_CHARS`.
+Grab that bunch of chars and that's the value for `UPTIMEROBOT_HEARTBEAT_PATH`.
+
+TODO(mcsaucy): change our logic to take a whole URL so this is easier.
+
+#### `K3S_DATASTORE_ENDPOINT`
+
+See [k3s docs](https://rancher.com/docs/k3s/latest/en/installation/datastore/)
+for more details here. If you want to use the embedded SQLite option, set this
+to an empty value explicitly.
+
+#### Other `K3S_` vars
+
+Just add em in and we'll preserve em. `k3s` will start with those vars set.
 
 ## Updating the Ignition configs
 
