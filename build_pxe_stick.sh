@@ -20,14 +20,14 @@ function happy_grep() {
 }
 
 declare -A ENV2PREFIX=(
-    [PAPERTRAIL_HOST]=PAPERTRAIL_
-    [PAPERTRAIL_PORT]=PAPERTRAIL_
+    [LOGEXPORT_HOST]=LOGEXPORT_
+    [LOGEXPORT_PORT]=LOGEXPORT_
     [HEARTBEAT_URL]=HEARTBEAT_
     [NODE_HOSTNAME]=NODE_HOSTNAME
 )
 
 declare -A PREFIX2SVC=(
-    [PAPERTRAIL_]="Papertrail"
+    [LOGEXPORT_]="Log Export"
     [HEARTBEAT_]="Heartbeat"
     [NODE_HOSTNAME]="hostname setting"
 )
@@ -82,7 +82,7 @@ function git_reference() {
 function repro() {
     echo "#!/bin/bash"
     echo "# @ $(git_reference)"
-    env_patterns=(-e "^K3S_" -e "^PAPERTRAIL_" -e "^HEARTBEAT_")
+    env_patterns=(-e "^K3S_" -e "^LOGEXPORT_" -e "^HEARTBEAT_")
     echo "env \\"
     for e in $(env | grep "${env_patterns[@]}" | cut -d= -f1); do
         printf "  %s=%q \\" "$e" "${!e}"
@@ -114,15 +114,14 @@ function usage_and_die() {
     error 'Usage: '
     error ' [SSH_KEY_PATH=/root/.ssh/id_rsa.pub] \\'
     error ' [NODE_HOSTNAME=node0] \\'
-    error ' [PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX] \\'
+    error ' [LOGEXPORT_HOST=logsX.papertrailapp.com LOGEXPORT_PORT=XXXXX] \\'
     error ' [HEARTBEAT_URL=https://nudge.me/im_alive] \\'
     error ' [K3S_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
     error ' ./build_pxe_stick.sh /dev/sdX'
     error ''
     error 'If the necessary variables are not populated for a given component,'
     error 'then that functionality will be disabled in the resultant system,'
-    error 'e.g., no PAPERTRAIL_PORT, then Papertrail log exporting will never'
-    error 'be enabled.'
+    error 'e.g., no LOGEXPORT_PORT, then log exporting will not be enabled.'
     exit 1
 }
 
@@ -180,7 +179,7 @@ log "Writing environment files in $SECRETS..."
     umask 0077
     # NOTE: if you update these, also update the patterns in `repro`
     env | happy_grep "^K3S_" > "$SECRETS/k3s_env" 
-    env | happy_grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
+    env | happy_grep "^LOGEXPORT_" > "$SECRETS/logexport_env"
     env | happy_grep "^HEARTBEAT_" > "$SECRETS/heartbeat_env"
 
     repro > "$SECRETS/reproduce.sh"

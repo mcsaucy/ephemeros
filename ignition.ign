@@ -84,9 +84,9 @@
         "name": "k3s.service"
       },
       {
-        "contents": "[Unit]\nDescription=Papertrail\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/papertrail_env\n\n[Service]\nEnvironmentFile=/secrets/papertrail_env\nExecStart=/bin/sh -c 'journalctl -f | ncat --ssl \"${PAPERTRAIL_HOST}\" \"${PAPERTRAIL_PORT}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Log Exporter\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/logexport_env\n\n[Service]\nEnvironmentFile=/secrets/logexport_env\nExecStart=/bin/sh -c 'journalctl -f | ncat --ssl \"$LOGEXPORT_HOST}\" \"${LOGEXPORT_PORT}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
-        "name": "papertrail.service"
+        "name": "logexport.service"
       },
       {
         "contents": "[Unit]\nDescription=Monitoring Heartbeat Pulse\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/heartbeat_env\n\n[Service]\nEnvironmentFile=/secrets/heartbeat_env\nExecStart=/bin/sh -c 'wget --spider \"${HEARTBEAT_URL}\" \u003e/dev/null 2\u003e\u00261'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",

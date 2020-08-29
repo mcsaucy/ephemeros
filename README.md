@@ -61,14 +61,14 @@ Pop in a flash drive you don't care about and then run the following:
 sudo \
     SSH_KEY_PATH=$HOME/.ssh/id_rsa.pub \
     NODE_HOSTNAME=node1337 \
-    PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \
+    LOGEXPORT_HOST=logsX.papertrailapp.com LOGEXPORT_PORT=XXXXX \
     HEARTBEAT_URL=https://nudge.me/im_alive \
     K3S_DATASTORE_ENDPOINT="see the k3s docs" \
     # Other K3S_* env vars you probably want to set \
     ./build_pxe_stick.sh /dev/sdX
 ```
 
-If you don't specify expected `PAPERTRAIL_*`, `HEARTBEAT_*` or `K3S_*`, we'll
+If you don't specify expected `LOGEXPORT_*`, `HEARTBEAT_*` or `K3S_*`, we'll
 throw up a warning in `build_pxe_stick.sh` and those components won't be
 activated at system runtime.
 
@@ -85,9 +85,16 @@ Path to a SSH public key, e.g. `$HOME/.ssh/id_rsa.pub` (the default). We need
 this to be something, as otherwise we're entirely the values set when the
 Ignition config is applied
 
-#### `PAPERTRAIL_HOST` and `PAPERTRAIL_PORT`
+#### `LOGEXPORT_HOST` and `LOGEXPORT_PORT`
 
-These values are ripped from the [Papertrail setup page](
+Where you get these values will vary a lot based upon which log ingestion
+service you use. We support the "just pipe `journalctl -f` to `ncat`" approach
+that's used by Papertrail and Graylog (and maybe others? idk).
+
+##### Using Papertrail
+
+If you're using Papertrial, you can rip these from from the
+[Papertrail setup page](
 https://papertrailapp.com/systems/setup?type=system&platform=unix). See the bit
 at the top that says "Your logs will go to...". These values seem to be scoped
 to the Papertrail account, rather than an individual sender, so feel free to

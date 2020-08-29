@@ -86,18 +86,18 @@ systemd:
         ExecStart=/opt/bin/k3s server \
           --cluster-init \
           --cluster-domain example.com \
-    - name: papertrail.service
+    - name: logexport.service
       enabled: true
       contents: |
         [Unit]
-        Description=Papertrail
+        Description=Log Exporter
         After=systemd-journald.service
         Requires=systemd-journald.service
-        ConditionFileNotEmpty=/secrets/papertrail_env
+        ConditionFileNotEmpty=/secrets/logexport_env
 
         [Service]
-        EnvironmentFile=/secrets/papertrail_env
-        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${PAPERTRAIL_HOST}" "${PAPERTRAIL_PORT}"'
+        EnvironmentFile=/secrets/logexport_env
+        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "$LOGEXPORT_HOST}" "${LOGEXPORT_PORT}"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s
