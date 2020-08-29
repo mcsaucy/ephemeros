@@ -3,7 +3,8 @@
 Tools and configuration for provisioning OS diskless Container Linux clusters,
 running [k3s](https://k3s.io) and logging with
 [Papertrail](https://papertrail.com). Nodes boot from an iPXE flash drive,
-which also contains a dedicated volume for keeping secrets.
+which also contains a dedicated volume for keeping secrets. *Apply platform
+config changes and updates by rebooting.*
 
 The iPXE script downloads and boots the newest stable release for Flatcar
 Container Linux (RIP CoreOS), which then pulls in the
@@ -14,6 +15,43 @@ there. But we still need those values to be carried over somehow, so we capture
 those values at iPXE flash drive provisioning-time and throw them into the
 `secrets` volume. From there, all service definitions pull what they need from
 `/secrets`, which is readonly mounted.
+
+## Why?
+
+A number of reasons, in no particular order:
+
+- I didn't want boot drives stealing SATA ports and drive bays on my machines
+- I didn't want another computing environment that turned into me managing a
+  small pack of Debian/Fedora boxes
+- I didn't want to shell out additional money for OS drives that would
+  basically just hold logs
+- I didn't want to manage a bunch of infrastructure (log collection, config
+  management, presence monitoring) just to have a basic, reliable deployment
+- I *did* want to try something new
+
+### What could a possible deployment look like?
+
+You can swing a decent deployment using hosted services to the tune of less
+than $20/month. These are just the bare necessities to bootstrap and monitor a
+k3s cluster. For any actual applications, you may want dedicated storage. A
+way to accomplish that would be with a [Rook](https://rook.io)-managed [Ceph](
+https://ceph.io) cluster (backed by local disks, probably), which is then
+either used by external clients or cluster-internal containers.
+
+#### Log collection
+papertrail.com has a free tier with 48 hours of search and 7 days of archives.
+
+#### k3s datastore hosting
+Heroku's "Hobby Basic" tier of hosted postgres allows for 10 million rows at
+$9/month. My "this is a single node doing nothing" test hit 3k rows, so
+10 million rows will hopefully be enough headroom. Worst case, the next tier
+$50/month, which will be high enough for me to consider what I want to do
+longer term.
+
+#### Hearbeat monitoring
+You can get some super basic (but functional) heartbeat monitoring with
+UptimeRobot. Unfortunately, heartbeat monitoring is a beta offering and not
+free, but it's like $8/month so /shrug.
 
 ## Making boot media
 
