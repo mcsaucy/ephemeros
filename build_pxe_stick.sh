@@ -7,15 +7,56 @@ function log() {
     echo -e "\e[32m$*\e[0m" >&2
 }
 
+function warn() {
+    echo -e "\e[33m$*\e[0m" >&2
+}
+
 function error() {
     echo -e "\e[31m$*\e[0m" >&2
 }
 
+function happy_grep() {
+    grep "$@" || :
+}
+
+declare -A ENV2PREFIX=(
+    [PAPERTRAIL_HOST]=PAPERTRAIL_
+    [PAPERTRAIL_PORT]=PAPERTRAIL_
+    [UPTIMEROBOT_HEARTBEAT_PATH]=UPTIMEROBOT_HEATBEAT_
+    [NODE_HOSTNAME]=NODE_HOSTNAME
+)
+
+declare -A PREFIX2SVC=(
+    [PAPERTRAIL_]="Papertrail"
+    [UPTIMEROBOT_HEARTBEAT_]="UptimeTobot Heartbeat"
+    [NODE_HOSTNAME]="hostname setting"
+)
+
 function check_env_vars() {
-    : "${PAPERTRAIL_HOST?}"
-    : "${PAPERTRAIL_PORT?}"
-    : "${UPTIMEROBOT_HEARTBEAT_PATH?}"
-    : "${NODE_HOSTNAME?}"
+    for e in "${!ENV2PREFIX[@]}"; do
+        prefix="${ENV2PREFIX[$e]}"
+        svc="${PREFIX2SVC[$prefix]}"
+
+        if [[ -z "${!e}" ]]; then
+            warn "$e not set. Disabling $svc functionality from resultant system."
+            unset_many "$prefix"
+        fi
+    done
+}
+
+function unset_many() {
+    prefix="${1?}"
+    log "unsetting $prefix* vars"
+
+    mapfile -d '' vars < <(env -0)
+
+    for v in "${vars[@]}"; do
+        varname="${v%%=*}"
+        if [[ "$varname" =~ "$prefix"* ]]; then
+            warn "unsetting $varname"
+            unset "$varname"
+        fi
+    done
 }
 
 function git_reference() {
@@ -53,6 +94,7 @@ function repro() {
 
 function build_ipxe() {
     (
+        set -e
         cd "$OUT"
         git clone git://git.ipxe.org/ipxe.git
         cd ipxe/src
@@ -70,10 +112,15 @@ function unmount() {
 
 function usage_and_die() {
     error 'Usage: '
-    error ' PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \\'
-    error ' UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \\'
+    error ' [NODE_HOSTNAME=node0] \\'
+    error ' [PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX] \\'
+    error ' [UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou] \\'
     error ' [K3S_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
     error ' ./build_pxe_stick.sh /dev/sdX'
+    error ''
+    error 'If the correct variables are not populated, that functionality will'
+    error 'be disabled in the resultant system, e.g., no PAPERTRAIL_PORT, then'
+    error 'Papertrail log will never be enabled.'
     exit 1
 }
 
@@ -130,9 +177,9 @@ log "Writing environment files in $SECRETS..."
 (
     umask 0077
     # NOTE: if you update these, also update the patterns in `repro`
-    env | grep "^K3S_" > "$SECRETS/k3s_env"
-    env | grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
-    env | grep "^UPTIMEROBOT_HEARTBEAT_" > "$SECRETS/uptimerobot_heartbeat_env"
+    env | happy_grep "^K3S_" > "$SECRETS/k3s_env" 
+    env | happy_grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
+    env | happy_grep "^UPTIMEROBOT_HEARTBEAT_" > "$SECRETS/uptimerobot_heartbeat_env"
 
     repro > "$SECRETS/reproduce.sh"
 )
