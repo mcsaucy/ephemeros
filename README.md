@@ -21,6 +21,8 @@ Pop in a flash drive you don't care about and then run the following:
 
 ```shell
 sudo \
+    SSH_KEY_PATH=$HOME/.ssh/id_rsa.pub \
+    NODE_HOSTNAME=node1337 \
     PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \
     UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \
     K3S_TOKEN="you should really set this to something secret" \

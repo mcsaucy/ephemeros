@@ -112,15 +112,17 @@ function unmount() {
 
 function usage_and_die() {
     error 'Usage: '
+    error ' [SSH_KEY_PATH=/root/.ssh/id_rsa.pub] \\'
     error ' [NODE_HOSTNAME=node0] \\'
     error ' [PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX] \\'
     error ' [UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou] \\'
     error ' [K3S_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
     error ' ./build_pxe_stick.sh /dev/sdX'
     error ''
-    error 'If the correct variables are not populated, that functionality will'
-    error 'be disabled in the resultant system, e.g., no PAPERTRAIL_PORT, then'
-    error 'Papertrail log will never be enabled.'
+    error 'If the necessary variables are not populated for a given component,'
+    error 'then that functionality will be disabled in the resultant system,'
+    error 'e.g., no PAPERTRAIL_PORT, then Papertrail log exporting will never'
+    error 'be enabled.'
     exit 1
 }
 

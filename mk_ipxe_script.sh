@@ -2,7 +2,11 @@
 
 set -e
 
-KEY=$(< "${SSH_KEY_PATH:-$HOME/.ssh/id_rsa.pub}")
+key_path="${SSH_KEY_PATH:-$HOME/.ssh/id_rsa.pub}"
+if ! KEY=$(< "$key_path"); then
+    echo "!!! Couldn't find ${key_path}. Set SSH_KEY_PATH to a pub key path." >&2
+    exit 1
+fi
 
 kernel_params=(
     "initrd=flatcar_production_pxe_image.cpio.gz"
