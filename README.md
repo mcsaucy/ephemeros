@@ -89,7 +89,7 @@ Ignition config is applied
 
 Where you get these values will vary a lot based upon which log ingestion
 service you use. We support the "just pipe `journalctl -f` to `ncat`" approach
-that's used by Papertrail and Graylog (and maybe others? idk).
+that's used by Papertrail (and maybe others? idk).
 
 ##### Using Papertrail
 
