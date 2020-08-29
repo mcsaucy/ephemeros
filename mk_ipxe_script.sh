@@ -16,7 +16,7 @@ kernel_params=(
 )
 
 if [[ -n "$NODE_HOSTNAME" ]]; then
-    kernel_comandline+=( "hostname=$NODE_HOSTNAME" )
+    kernel_params+=( "hostname=$NODE_HOSTNAME" )
 fi
 
 echo "#!ipxe
