@@ -30,6 +30,10 @@ sudo \
     ./build_pxe_stick.sh /dev/sdX
 ```
 
+If you don't specify expected `PAPERTRAIL_*`, `UPTIMEROBOT_*` or `K3S_*`, we'll
+throw up a warning in `build_pxe_stick.sh` and those components won't be
+activated at system runtime.
+
 ## Updating the Ignition configs
 
 The [ignition.ign](ignition.ign) file is generated from the
@@ -62,7 +66,7 @@ Then you can just `ssh core@localhost -p 2222` when it's done booting.
 
 ## I wanna mess with this
 
-Cool! A lot of things are hardcoded to `mcsaucy` presently and you're gonna
-want to fix those. You're going to want to replace every instance of `mcsaucy`
-with a more appropriate value for your setup. You're also going to want to sub
-out my ssh public key in the ignition file for you own.
+Cool! You're probably gonna wanna call `build_pxe_stick.sh` with a custom
+`IGN_PATH`. The default is
+`https://raw.githubusercontent.com/mcsaucy/ephemeros/master/ignition.ign`, so
+you'll probably want to change that to the URI for your own.
