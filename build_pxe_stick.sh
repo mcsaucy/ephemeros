@@ -22,13 +22,13 @@ function happy_grep() {
 declare -A ENV2PREFIX=(
     [PAPERTRAIL_HOST]=PAPERTRAIL_
     [PAPERTRAIL_PORT]=PAPERTRAIL_
-    [UPTIMEROBOT_HEARTBEAT_PATH]=UPTIMEROBOT_HEATBEAT_
+    [HEARTBEAT_URL]=HEARTBEAT_
     [NODE_HOSTNAME]=NODE_HOSTNAME
 )
 
 declare -A PREFIX2SVC=(
     [PAPERTRAIL_]="Papertrail"
-    [UPTIMEROBOT_HEARTBEAT_]="UptimeTobot Heartbeat"
+    [HEARTBEAT_]="Heartbeat"
     [NODE_HOSTNAME]="hostname setting"
 )
 
@@ -82,7 +82,7 @@ function git_reference() {
 function repro() {
     echo "#!/bin/bash"
     echo "# @ $(git_reference)"
-    env_patterns=(-e "^K3S_" -e "^PAPERTRAIL_" -e "^UPTIMEROBOT_HEARTBEAT_")
+    env_patterns=(-e "^K3S_" -e "^PAPERTRAIL_" -e "^HEARTBEAT_")
     echo "env \\"
     for e in $(env | grep "${env_patterns[@]}" | cut -d= -f1); do
         printf "  %s=%q \\" "$e" "${!e}"
@@ -115,7 +115,7 @@ function usage_and_die() {
     error ' [SSH_KEY_PATH=/root/.ssh/id_rsa.pub] \\'
     error ' [NODE_HOSTNAME=node0] \\'
     error ' [PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX] \\'
-    error ' [UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou] \\'
+    error ' [HEARTBEAT_URL=https://nudge.me/im_alive] \\'
     error ' [K3S_ENV_VARS_YOU_WANT_TO_SET=blahblahblah...] \\'
     error ' ./build_pxe_stick.sh /dev/sdX'
     error ''
@@ -181,7 +181,7 @@ log "Writing environment files in $SECRETS..."
     # NOTE: if you update these, also update the patterns in `repro`
     env | happy_grep "^K3S_" > "$SECRETS/k3s_env" 
     env | happy_grep "^PAPERTRAIL_" > "$SECRETS/papertrail_env"
-    env | happy_grep "^UPTIMEROBOT_HEARTBEAT_" > "$SECRETS/uptimerobot_heartbeat_env"
+    env | happy_grep "^HEARTBEAT_" > "$SECRETS/heartbeat_env"
 
     repro > "$SECRETS/reproduce.sh"
 )

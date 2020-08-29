@@ -89,14 +89,14 @@
         "name": "papertrail.service"
       },
       {
-        "contents": "[Unit]\nDescription=UptimeRobot Heartbeat\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/uptimerobot_heartbeat_env\n\n[Service]\nEnvironmentFile=/secrets/uptimerobot_heartbeat_env\nExecStart=/bin/sh -c 'wget --spider \"https://heartbeat.uptimerobot.com/${UPTIMEROBOT_HEARTBEAT_PATH}\" \u003e/dev/null 2\u003e\u00261'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Monitoring Heartbeat Pulse\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/heartbeat_env\n\n[Service]\nEnvironmentFile=/secrets/heartbeat_env\nExecStart=/bin/sh -c 'wget --spider \"${HEARTBEAT_URL}\" \u003e/dev/null 2\u003e\u00261'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
-        "name": "uptimerobot-heartbeat.service"
+        "name": "heartbeat.service"
       },
       {
-        "contents": "[Unit]\nDescription=Run UptimeRobot Heartbeat every 5 minutes\nRequires=uptimerobot-heartbeat.service\n\n[Timer]\nUnit=uptimerobot-heartbeat.service\nOnUnitInactiveSec=5m\nAccuracySec=10s\n\n[Install]\nWantedBy=timers.target\n",
+        "contents": "[Unit]\nDescription=Run Heartbeat every 5 minutes\nRequires=heartbeat.service\n\n[Timer]\nUnit=heartbeat.service\nOnUnitInactiveSec=5m\nAccuracySec=10s\n\n[Install]\nWantedBy=timers.target\n",
         "enabled": true,
-        "name": "uptimerobot_heartbeat.timer"
+        "name": "heartbeat.timer"
       },
       {
         "contents": "[Unit]\nDescription=Secrets\n\n[Mount]\nWhat=/dev/disk/by-label/secrets\nWhere=/secrets\nOptions=ro\nDirectoryMode=0700\n\n[Install]\nWantedBy=k3s.service\n",

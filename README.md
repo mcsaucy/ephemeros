@@ -24,13 +24,13 @@ sudo \
     SSH_KEY_PATH=$HOME/.ssh/id_rsa.pub \
     NODE_HOSTNAME=node1337 \
     PAPERTRAIL_HOST=logsX.papertrailapp.com PAPERTRAIL_PORT=XXXXX \
-    UPTIMEROBOT_HEARTBEAT_PATH=biglongopaquethingitgivesyou \
+    HEARTBEAT_URL=https://nudge.me/im_alive \
     K3S_DATASTORE_ENDPOINT="see the k3s docs" \
     # Other K3S_* env vars you probably want to set \
     ./build_pxe_stick.sh /dev/sdX
 ```
 
-If you don't specify expected `PAPERTRAIL_*`, `UPTIMEROBOT_*` or `K3S_*`, we'll
+If you don't specify expected `PAPERTRAIL_*`, `HEARTBEAT_*` or `K3S_*`, we'll
 throw up a warning in `build_pxe_stick.sh` and those components won't be
 activated at system runtime.
 
@@ -55,10 +55,13 @@ at the top that says "Your logs will go to...". These values seem to be scoped
 to the Papertrail account, rather than an individual sender, so feel free to
 reuse those values across multiple nodes.
 
-#### `UPTIMEROBOT_HEARTBEAT_PATH`
+#### `HEARTBEAT_URL`
 
-UptimeRobot supports multiple types of monitoring signals. Some of these
-signals are free, but not heartbeat. :(
+This can really be any URL; we're just gonna call it every 5 minutes with
+`wget --spider`. It wouldn't be rocket surgery to implement your own heartbeat
+monitor service, but UptimeRobot can do this (if you're willing to pay for it).
+
+##### Using UptimeRobot Heartbeat signals
 
 Unlike with Papertrail, you need dedicated values for each host here. To get
 those, you'll want to:
@@ -70,11 +73,10 @@ those, you'll want to:
     writing)
 4.  set the "Friendly Name" to the node's hostname
 5.  set a monitoring inverval of "every 5 minutes"
+6.  work out who should be alerted when things break
 
 That'll kick out a URL like `https://heartbeat.uptimerobot.com/BUNCH_OF_CHARS`.
-Grab that bunch of chars and that's the value for `UPTIMEROBOT_HEARTBEAT_PATH`.
-
-TODO(mcsaucy): change our logic to take a whole URL so this is easier.
+That's the value for `HEARTBEAT_URL`.
 
 #### `K3S_DATASTORE_ENDPOINT`
 

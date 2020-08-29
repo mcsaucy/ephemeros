@@ -104,18 +104,18 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
-    - name: uptimerobot-heartbeat.service
+    - name: heartbeat.service
       enabled: true
       contents: |
         [Unit]
-        Description=UptimeRobot Heartbeat
+        Description=Monitoring Heartbeat Pulse
         After=systemd-journald.service
         Requires=systemd-journald.service
-        ConditionFileNotEmpty=/secrets/uptimerobot_heartbeat_env
+        ConditionFileNotEmpty=/secrets/heartbeat_env
 
         [Service]
-        EnvironmentFile=/secrets/uptimerobot_heartbeat_env
-        ExecStart=/bin/sh -c 'wget --spider "https://heartbeat.uptimerobot.com/${UPTIMEROBOT_HEARTBEAT_PATH}" >/dev/null 2>&1'
+        EnvironmentFile=/secrets/heartbeat_env
+        ExecStart=/bin/sh -c 'wget --spider "${HEARTBEAT_URL}" >/dev/null 2>&1'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s
@@ -123,15 +123,15 @@ systemd:
         [Install]
         WantedBy=multi-user.target
 
-    - name: uptimerobot_heartbeat.timer
+    - name: heartbeat.timer
       enabled: true
       contents: |
         [Unit]
-        Description=Run UptimeRobot Heartbeat every 5 minutes
-        Requires=uptimerobot-heartbeat.service
+        Description=Run Heartbeat every 5 minutes
+        Requires=heartbeat.service
 
         [Timer]
-        Unit=uptimerobot-heartbeat.service
+        Unit=heartbeat.service
         OnUnitInactiveSec=5m
         AccuracySec=10s
 
