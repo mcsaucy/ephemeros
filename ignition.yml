@@ -46,12 +46,12 @@ systemd:
       contents: |
         [Unit]
         Description=Set hostname based upon kernel commandline
+        ConditionKernelCommandLine=hostname
         
         [Install]
         WantedBy=k3s.service
 
         [Service]
-        ConditionKernelCommandLine=hostname
         ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/opt/bin/k_params hostname)"'
         TimeoutStartSec=0
         Restart=on-failure
@@ -64,6 +64,7 @@ systemd:
         Description=Lightweight Kubernetes
         Documentation=https://k3s.io
         After=network-online.target
+        ConditionFileNotEmpty=/secrets/k3s_env
 
         [Install]
         WantedBy=multi-user.target
@@ -79,7 +80,6 @@ systemd:
         TimeoutStartSec=0
         Restart=always
         RestartSec=5s
-        ConditionFileNotEmpty=/secrets/k3s_env
         EnvironmentFile=/secrets/k3s_env
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
@@ -93,9 +93,9 @@ systemd:
         Description=Papertrail
         After=systemd-journald.service
         Requires=systemd-journald.service
+        ConditionFileNotEmpty=/secrets/papertrail_env
 
         [Service]
-        ConditionFileNotEmpty=/secrets/papertrail_env
         EnvironmentFile=/secrets/papertrail_env
         ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${PAPERTRAIL_HOST}" "${PAPERTRAIL_PORT}"'
         TimeoutStartSec=0
@@ -107,12 +107,13 @@ systemd:
     - name: uptimerobot-heartbeat.service
       enabled: true
       contents: |
+        [Unit]
         Description=UptimeRobot Heartbeat
         After=systemd-journald.service
         Requires=systemd-journald.service
+        ConditionFileNotEmpty=/secrets/uptimerobot_heartbeat_env
 
         [Service]
-        ConditionFileNotEmpty=/secrets/uptimerobot_heartbeat_env
         EnvironmentFile=/secrets/uptimerobot_heartbeat_env
         ExecStart=/bin/sh -c 'wget --spider "https://heartbeat.uptimerobot.com/${UPTIMEROBOT_HEARTBEAT_PATH}" >/dev/null 2>&1'
         TimeoutStartSec=0
