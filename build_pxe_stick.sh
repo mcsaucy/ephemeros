@@ -91,18 +91,36 @@ function repro() {
     echo "  $0"
 }
 
-
-function build_ipxe() {
+function prep_ipxe() {
     (
         set -e
         cd "$OUT"
         git clone git://git.ipxe.org/ipxe.git
         cd ipxe/src
-        bash "$HERE/mk_ipxe_script.sh" >"$OUT/generated.ipxe"
-        make -j "$(nproc)" bin/ipxe.usb EMBED="$OUT/generated.ipxe"
+    ) >&2
+    echo "$OUT/ipxe/src"
+}
+
+function build_uefi_ipxe() {
+    (
+        set -e
+        cd "$1"
+        bash "$HERE/mk_ipxe_script.sh" >"$1/generated.ipxe"
+        make -j "$(nproc)" bin-x86_64-efi/ipxe.efi EMBED="$1/generated.ipxe"
+        log "Built $PWD/bin-x86_64-efi/ipxe.efi"
+    ) >&2
+    echo "$1/bin-x86_64-efi/ipxe.efi"
+}
+
+function build_bios_ipxe() {
+    (
+        set -e
+        cd "$1"
+        bash "$HERE/mk_ipxe_script.sh" >"$1/generated.ipxe"
+        make -j "$(nproc)" bin/ipxe.usb EMBED="$1/generated.ipxe"
         log "Built $PWD/bin/ipxe.usb"
     ) >&2
-    echo "$OUT/ipxe/src/bin/ipxe.usb"
+    echo "$1/bin/ipxe.usb"
 }
 
 function unmount() {
@@ -123,6 +141,17 @@ function usage_and_die() {
     error 'then that functionality will be disabled in the resultant system,'
     error 'e.g., no LOGEXPORT_PORT, then log exporting will not be enabled.'
     exit 1
+}
+
+function mount_part() {
+    root="$1"
+    device="$2"
+    name="$3"
+
+    mkdir "$root/${name}_mnt"
+    log "mounting $name volume @ $root/${name}_mnt"
+    mount "$device" "$root/${name}_mnt"
+    echo "$root/${name}_mnt"
 }
 
 HERE="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -150,30 +179,34 @@ fi
 
 unmount
 
-IPXE_IMG="$(build_ipxe)"
-dd if="$IPXE_IMG" of="$DISK"
-log "dd'd image to $DISK" >&2
+IPXE_PATH="$(prep_ipxe)"
+UEFI_IPXE="$(build_uefi_ipxe "$IPXE_PATH")"
+BIOS_IPXE="$(build_bios_ipxe "$IPXE_PATH")"
 
+log "zeroing the first meg of $DISK"
+dd if=/dev/zero of="$DISK" bs=1M count=1
+
+log "Creating disk label for $DISK"
+parted "$DISK" mklabel gpt 
+
+log "dd'ing bios image to $DISK"
+dd if="$BIOS_IPXE" of="$DISK"
+
+log "Adding a partition for EFI boot to $DISK"
+parted "$DISK" mkpart primary fat32 4MB 512MB
 log "Adding a partition for secrets to $DISK"
 parted "$DISK" mkpart primary ext4 512MB 1GB
 partprobe
-log "We don't know the name of the actual partition we just made is,"
-log "so we're just gonna assume it's ${DISK}1."
-log
-log "If you're running this on a drive that was previously provisioned with"
-log "this script, you may find a scary message regarding an existing fs. "
-log "This is caused by our parted invocation lining things up just right such"
-log "that the existing fs is still roughly in tact."
-log
-log "It's likely safe to proceed here."
-log "Making an ext4 volume on ${DISK}1 called 'secrets'."
-mkfs.ext4 -L secrets "${DISK}1"
 
-sudo mkdir "$OUT/mountpoint"
-log "mounting secrets volume @ $OUT/mountpoint"
-mount "${DISK}1" "$OUT/mountpoint"
-SECRETS="$OUT/mountpoint"
+mkfs.fat -F32 -n efi "${DISK}1"
+mkfs.ext4 -L secrets "${DISK}2"
 
+EFI="$(mount_part "$OUT" "${DISK}1" efi)"
+log "Writing ipxe.efi to efi partition"
+mkdir -p "$EFI/efi/boot"
+cp "$UEFI_IPXE" "$OUT/efi_mnt/efi/boot/bootx64.efi"
+
+SECRETS="$(mount_part "$OUT" "${DISK}2" secrets)"
 log "Writing environment files in $SECRETS..."
 (
     umask 0077
