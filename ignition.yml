@@ -38,6 +38,36 @@ storage:
       target: "/opt/bin/k3s"
       hard: false
 
+networkd:
+  units:
+    - name: 25-jamesbond.netdev
+      contents: |
+        [NetDev]
+        Name=james
+        Kind=bond
+
+        [Bond]
+        Mode=802.3ad
+        TransmitHashPolicy=layer3+4
+        MIIMonitorSec=1s
+        LACPTransmitRate=fast
+
+    - name: james.network
+      contents: |
+        [Match]
+        Name=eno*
+
+        [Network]
+        Bond=james
+
+    - name: james_dhcp.network
+      contents: |
+        [Match]
+        Name=james
+
+        [Network]
+        DHCP=yes
+
 systemd:
   units:
 

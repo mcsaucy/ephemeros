@@ -7,7 +7,22 @@
     "timeouts": {},
     "version": "2.3.0"
   },
-  "networkd": {},
+  "networkd": {
+    "units": [
+      {
+        "contents": "[NetDev]\nName=james\nKind=bond\n\n[Bond]\nMode=802.3ad\nTransmitHashPolicy=layer3+4\nMIIMonitorSec=1s\nLACPTransmitRate=fast\n",
+        "name": "25-jamesbond.netdev"
+      },
+      {
+        "contents": "[Match]\nName=eno*\n\n[Network]\nBond=james\n",
+        "name": "james.network"
+      },
+      {
+        "contents": "[Match]\nName=james\n\n[Network]\nDHCP=yes\n",
+        "name": "james_dhcp.network"
+      }
+    ]
+  },
   "passwd": {
     "users": [
       {
