@@ -127,7 +127,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/secrets/logexport_env
-        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "$LOGEXPORT_HOST}" "${LOGEXPORT_PORT}"'
+        ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${LOGEXPORT_HOST}" "${LOGEXPORT_PORT}"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s

@@ -99,7 +99,7 @@
         "name": "k3s.service"
       },
       {
-        "contents": "[Unit]\nDescription=Log Exporter\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/logexport_env\n\n[Service]\nEnvironmentFile=/secrets/logexport_env\nExecStart=/bin/sh -c 'journalctl -f | ncat --ssl \"$LOGEXPORT_HOST}\" \"${LOGEXPORT_PORT}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Log Exporter\nAfter=systemd-journald.service\nRequires=systemd-journald.service\nConditionFileNotEmpty=/secrets/logexport_env\n\n[Service]\nEnvironmentFile=/secrets/logexport_env\nExecStart=/bin/sh -c 'journalctl -f | ncat --ssl \"${LOGEXPORT_HOST}\" \"${LOGEXPORT_PORT}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=5s\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
         "name": "logexport.service"
       },
