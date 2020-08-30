@@ -33,6 +33,39 @@ storage:
         name: root
       group:
         name: root
+    - path: "/etc/systemd/network/25-jamesbond.netdev"
+      mode: 0644
+      contents:
+        inline: |
+          [NetDev]
+          Name=james
+          Kind=bond
+          [Bond]
+          Mode=802.3ad
+          TransmitHashPolicy=layer3+4
+          MIIMonitorSec=1s
+          LACPTransmitRate=fast
+
+    - path: "/etc/systemd/network/james.network"
+      mode: 0644
+      contents:
+        inline: |
+          [Match]
+          Name=eno*
+          [Network]
+          Bond=james
+
+    - path: "/etc/systemd/network/james_dhcp.network"
+      mode: 0644
+      contents:
+        inline: |
+          [Match]
+          Name=james
+          [Network]
+          DHCP=yes
+
+
+
   links:
     - path: "/opt/bin/kubectl"
       target: "/opt/bin/k3s"

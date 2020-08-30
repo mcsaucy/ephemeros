@@ -61,6 +61,33 @@
           "verification": {}
         },
         "mode": 493
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/systemd/network/25-jamesbond.netdev",
+        "contents": {
+          "source": "data:,%5BNetDev%5D%0AName%3Djames%0AKind%3Dbond%0A%5BBond%5D%0AMode%3D802.3ad%0ATransmitHashPolicy%3Dlayer3%2B4%0AMIIMonitorSec%3D1s%0ALACPTransmitRate%3Dfast%0A",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/systemd/network/james.network",
+        "contents": {
+          "source": "data:,%5BMatch%5D%0AName%3Deno*%0A%5BNetwork%5D%0ABond%3Djames%0A",
+          "verification": {}
+        },
+        "mode": 420
+      },
+      {
+        "filesystem": "root",
+        "path": "/etc/systemd/network/james_dhcp.network",
+        "contents": {
+          "source": "data:,%5BMatch%5D%0AName%3Djames%0A%5BNetwork%5D%0ADHCP%3Dyes%0A",
+          "verification": {}
+        },
+        "mode": 420
       }
     ],
     "links": [
