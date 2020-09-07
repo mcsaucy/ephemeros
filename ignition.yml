@@ -169,7 +169,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/secrets/namecheap_ddns_env
-        ExecStart=/opt/bin/namecheap_update james
+        ExecStart=/bin/sh -c '/opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=10m
