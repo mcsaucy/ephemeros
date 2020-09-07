@@ -82,7 +82,12 @@ function git_reference() {
 function repro() {
     echo "#!/bin/bash"
     echo "# @ $(git_reference)"
-    env_patterns=(-e "^K3S_" -e "^LOGEXPORT_" -e "^HEARTBEAT_")
+    env_patterns=(
+        -e "^K3S_"
+        -e "^LOGEXPORT_"
+        -e "^HEARTBEAT_"
+        -e "^NAMECHEAP_DDNS_"
+    )
     echo "env \\"
     for e in $(env | grep "${env_patterns[@]}" | cut -d= -f1); do
         printf "  %s=%q \\" "$e" "${!e}"
@@ -214,6 +219,7 @@ log "Writing environment files in $SECRETS..."
     env | happy_grep "^K3S_" > "$SECRETS/k3s_env" 
     env | happy_grep "^LOGEXPORT_" > "$SECRETS/logexport_env"
     env | happy_grep "^HEARTBEAT_" > "$SECRETS/heartbeat_env"
+    env | happy_grap "^NAMECHEAP_DDNS_" > "$SECRETS/namecheap_ddns_env"
 
     repro > "$SECRETS/reproduce.sh"
 )

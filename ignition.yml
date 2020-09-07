@@ -146,8 +146,7 @@ systemd:
       contents: |
         [Unit]
         Description=Monitoring Heartbeat Pulse
-        After=systemd-journald.service
-        Requires=systemd-journald.service
+        Requires=network-online.service
         ConditionFileNotEmpty=/secrets/heartbeat_env
 
         [Service]
@@ -156,6 +155,24 @@ systemd:
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=5s
+
+        [Install]
+        WantedBy=multi-user.target
+    - name: host_ddns.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Update our host's dynamic DNS record
+        Requires=sethostname.service
+        Requires=network-online.service
+        ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+
+        [Service]
+        EnvironmentFile=/secrets/namecheap_ddns_env
+        ExecStart=/opt/bin/namecheap_update james
+        TimeoutStartSec=0
+        Restart=on-failure
+        RestartSec=10m
 
         [Install]
         WantedBy=multi-user.target
