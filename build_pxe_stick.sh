@@ -219,7 +219,7 @@ log "Writing environment files in $SECRETS..."
     env | happy_grep "^K3S_" > "$SECRETS/k3s_env" 
     env | happy_grep "^LOGEXPORT_" > "$SECRETS/logexport_env"
     env | happy_grep "^HEARTBEAT_" > "$SECRETS/heartbeat_env"
-    env | happy_grap "^NAMECHEAP_DDNS_" > "$SECRETS/namecheap_ddns_env"
+    env | happy_grep "^NAMECHEAP_DDNS_" > "$SECRETS/namecheap_ddns_env"
 
     repro > "$SECRETS/reproduce.sh"
 )
