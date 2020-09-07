@@ -146,7 +146,7 @@ systemd:
       contents: |
         [Unit]
         Description=Monitoring Heartbeat Pulse
-        Requires=network-online.service
+        Requires=network-online.target
         ConditionFileNotEmpty=/secrets/heartbeat_env
 
         [Service]
