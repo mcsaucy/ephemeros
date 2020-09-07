@@ -33,6 +33,15 @@ storage:
         name: root
       group:
         name: root
+    - path: "/opt/bin/namecheap_update"
+      contents:
+        remote:
+            url: "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
+      mode: 0755
+      user:
+        name: root
+      group:
+        name: root
   links:
     - path: "/opt/bin/kubectl"
       target: "/opt/bin/k3s"
@@ -113,9 +122,7 @@ systemd:
         EnvironmentFile=/secrets/k3s_env
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
-        ExecStart=/opt/bin/k3s server \
-          --cluster-init \
-          --cluster-domain example.com \
+        ExecStart=/opt/bin/k3s server
     - name: logexport.service
       enabled: true
       contents: |

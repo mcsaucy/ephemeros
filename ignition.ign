@@ -76,6 +76,21 @@
           "verification": {}
         },
         "mode": 493
+      },
+      {
+        "filesystem": "root",
+        "group": {
+          "name": "root"
+        },
+        "path": "/opt/bin/namecheap_update",
+        "user": {
+          "name": "root"
+        },
+        "contents": {
+          "source": "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh",
+          "verification": {}
+        },
+        "mode": 493
       }
     ],
     "links": [
@@ -94,7 +109,7 @@
         "name": "sethostname.service"
       },
       {
-        "contents": "[Unit]\nDescription=Lightweight Kubernetes\nDocumentation=https://k3s.io\nAfter=network-online.target\nConditionFileNotEmpty=/secrets/k3s_env\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=notify\nKillMode=process\nDelegate=yes\nLimitNOFILE=1048576\nLimitNPROC=infinity\nLimitCORE=infinity\nTasksMax=infinity\nTimeoutStartSec=0\nRestart=always\nRestartSec=5s\nEnvironmentFile=/secrets/k3s_env\nExecStartPre=-/sbin/modprobe br_netfilter\nExecStartPre=-/sbin/modprobe overlay\nExecStart=/opt/bin/k3s server \\\n  --cluster-init \\\n  --cluster-domain example.com \\\n",
+        "contents": "[Unit]\nDescription=Lightweight Kubernetes\nDocumentation=https://k3s.io\nAfter=network-online.target\nConditionFileNotEmpty=/secrets/k3s_env\n\n[Install]\nWantedBy=multi-user.target\n\n[Service]\nType=notify\nKillMode=process\nDelegate=yes\nLimitNOFILE=1048576\nLimitNPROC=infinity\nLimitCORE=infinity\nTasksMax=infinity\nTimeoutStartSec=0\nRestart=always\nRestartSec=5s\nEnvironmentFile=/secrets/k3s_env\nExecStartPre=-/sbin/modprobe br_netfilter\nExecStartPre=-/sbin/modprobe overlay\nExecStart=/opt/bin/k3s server\n",
         "enabled": true,
         "name": "k3s.service"
       },
