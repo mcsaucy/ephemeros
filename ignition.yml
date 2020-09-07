@@ -164,7 +164,7 @@ systemd:
         [Unit]
         Description=Update our host's dynamic DNS record
         Requires=sethostname.service
-        Requires=network-online.service
+        Requires=network-online.target
         ConditionFileNotEmpty=/secrets/namecheap_ddns_env
 
         [Service]
