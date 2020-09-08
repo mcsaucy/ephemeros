@@ -94,7 +94,7 @@ systemd:
         ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/opt/bin/k_params hostname)"'
         TimeoutStartSec=0
         Restart=on-failure
-        RestartSec=5s
+        RestartSec=30s
 
     - name: k3s.service
       enabled: true
@@ -172,7 +172,7 @@ systemd:
         EnvironmentFile=/secrets/namecheap_ddns_env
         ExecStart=/bin/sh -c '/opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
         TimeoutStartSec=0
-        Restart=on-failure
+        Restart=always
         RestartSec=10m
 
         [Install]
