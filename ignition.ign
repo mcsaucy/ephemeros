@@ -124,7 +124,7 @@
         "name": "heartbeat.service"
       },
       {
-        "contents": "[Unit]\nDescription=Update our host's dynamic DNS record\nAfter=sethostname.service\nRequires=network-online.target\nConditionFileNotEmpty=/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '/opt/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-james}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=10m\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Update our host's dynamic DNS record\nAfter=sethostname.service\nRequires=network-online.target\nConditionFileNotEmpty=/secrets/namecheap_ddns_env\nConditionHost=!localhost\n\n[Service]\nEnvironmentFile=/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '/opt/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-james}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=10m\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
         "name": "host_ddns.service"
       },

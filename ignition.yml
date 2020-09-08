@@ -166,6 +166,7 @@ systemd:
         After=sethostname.service
         Requires=network-online.target
         ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+        ConditionHost=!localhost
 
         [Service]
         EnvironmentFile=/secrets/namecheap_ddns_env
