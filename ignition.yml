@@ -168,7 +168,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c 'kubectl get nodes/$(hostname) | grep -q Ready && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "${NAMECHEAP_DDNS_PRIMARY_HOSTNAME?}"'
+        ExecStart=/bin/sh -c '/opt/bin/kubectl get nodes/$(hostname) | grep -q Ready && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "${NAMECHEAP_DDNS_PRIMARY_HOSTNAME?}"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=1m
