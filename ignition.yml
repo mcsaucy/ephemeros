@@ -158,6 +158,23 @@ systemd:
 
         [Install]
         WantedBy=multi-user.target
+    - name: primary_ddns.service
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Set the primary hostname via DDNS
+        Requires=network-online.target k3s.service
+        ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+
+        [Service]
+        EnvironmentFile=/secrets/namecheap_ddns_env
+        ExecStart=/bin/sh -c 'kubectl get nodes/$(hostname) | grep -q Ready && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "${NAMECHEAP_DDNS_PRIMARY_HOSTNAME?}"'
+        TimeoutStartSec=0
+        Restart=on-failure
+        RestartSec=1m
+
+        [Install]
+        WantedBy=multi-user.target
     - name: host_ddns.service
       enabled: true
       contents: |
@@ -186,6 +203,21 @@ systemd:
 
         [Timer]
         Unit=heartbeat.service
+        OnUnitInactiveSec=5m
+        AccuracySec=10s
+
+        [Install]
+        WantedBy=timers.target
+
+    - name: primary_ddns.timer
+      enabled: true
+      contents: |
+        [Unit]
+        Description=Run primary_ddns every 5 minutes
+        Requires=primary_ddns.service
+
+        [Timer]
+        Unit=primary_ddns.service
         OnUnitInactiveSec=5m
         AccuracySec=10s
 

@@ -124,6 +124,11 @@
         "name": "heartbeat.service"
       },
       {
+        "contents": "[Unit]\nDescription=Set the primary hostname via DDNS\nRequires=network-online.target k3s.service\nConditionFileNotEmpty=/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c 'kubectl get nodes/$(hostname) | grep -q Ready \u0026\u0026 /opt/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-james}\" \"${NAMECHEAP_DDNS_PRIMARY_HOSTNAME?}\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=1m\n\n[Install]\nWantedBy=multi-user.target\n",
+        "enabled": true,
+        "name": "primary_ddns.service"
+      },
+      {
         "contents": "[Unit]\nDescription=Update our host's dynamic DNS record\nAfter=sethostname.service\nRequires=network-online.target\nConditionFileNotEmpty=/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '[ \"$(hostname)\" != localhost ] \u0026\u0026 /opt/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-james}\"'\nTimeoutStartSec=0\nRestart=always\nRestartSec=10m\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
         "name": "host_ddns.service"
@@ -132,6 +137,11 @@
         "contents": "[Unit]\nDescription=Run Heartbeat every 5 minutes\nRequires=heartbeat.service\n\n[Timer]\nUnit=heartbeat.service\nOnUnitInactiveSec=5m\nAccuracySec=10s\n\n[Install]\nWantedBy=timers.target\n",
         "enabled": true,
         "name": "heartbeat.timer"
+      },
+      {
+        "contents": "[Unit]\nDescription=Run primary_ddns every 5 minutes\nRequires=primary_ddns.service\n\n[Timer]\nUnit=primary_ddns.service\nOnUnitInactiveSec=5m\nAccuracySec=10s\n\n[Install]\nWantedBy=timers.target\n",
+        "enabled": true,
+        "name": "primary_ddns.timer"
       },
       {
         "contents": "[Unit]\nDescription=Secrets\n\n[Mount]\nWhat=/dev/disk/by-label/secrets\nWhere=/secrets\nOptions=ro\nDirectoryMode=0700\n\n[Install]\nWantedBy=k3s.service\n",
