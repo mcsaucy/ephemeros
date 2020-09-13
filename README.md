@@ -104,7 +104,25 @@ reuse those values across multiple nodes.
 
 This can really be any URL; we're just gonna call it every 5 minutes with
 `wget --spider`. It wouldn't be rocket surgery to implement your own heartbeat
-monitor service, but UptimeRobot can do this (if you're willing to pay for it).
+monitor service, but there are services that offer this.
+
+##### Using healthchecks.io
+
+Unlike with Papertrail, you need dedicated values for each host here. At the
+time of writing, healthchecks.io offers a free hobby tier with up to 20 checks.
+To get the host's `HEARTBEAT_URL`, you'll want to:
+
+1.  head to the [healthchecks.io dashboard](https://healthchecks.io).
+2.  sign in (if necessary) and select a project
+3.  click `Add Check` at the bottom
+4.  hit the small `edit` link at the top by the auto-generated UUID title to
+    set a better title
+5.  find the `Change Schedule...` button in the `Schedule` section near the
+    bottom of the page
+6.  set the period to 5 minutes and the grace time to 1 minute
+7.  configure notifications in the "Notification Methods" section
+8.  grab the `hc-ping.com` URL from the "How To Ping" section, and that's your
+    `HEARTBEAT_URL` value
 
 ##### Using UptimeRobot Heartbeat signals
 
