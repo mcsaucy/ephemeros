@@ -166,11 +166,10 @@ systemd:
         After=sethostname.service
         Requires=network-online.target
         ConditionFileNotEmpty=/secrets/namecheap_ddns_env
-        ConditionHost=!localhost
 
         [Service]
         EnvironmentFile=/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '/opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
+        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
         TimeoutStartSec=0
         Restart=always
         RestartSec=10m
