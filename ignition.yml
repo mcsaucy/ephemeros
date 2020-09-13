@@ -14,11 +14,11 @@ storage:
     - path: "/opt/bin/k3s"
       contents:
         remote:
-            url: "https://github.com/rancher/k3s/releases/download/v1.18.6%2Bk3s1/k3s"
+            url: "https://github.com/rancher/k3s/releases/download/v1.18.8%2Bk3s1/k3s"
             verification:
                 hash:
                     function: sha512
-                    sum: 0951e378d9d1525386e3bc5e067d8f256fe4aed16a5827850736ac223cb211213c48278dacf440694715c045673b583647ef0eb9fcf576dd4cc04685e56ee1f5
+                    sum: 1d9d460763784146d0ecfb8ccda26122e8fe5fc1d4e89f5829e6ef8f61a751e44dc62d167baf3abd407561d9a979b50e59805389b01a860f48c2f5641920c5b3
       mode: 0755
       user:
         name: root
