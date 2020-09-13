@@ -62,6 +62,13 @@ grow.
 You can get some super simple heartbeat monitoring with healthchecks.io. It's
 free as long as you fit within the hobby tier.
 
+#### DDNS updating
+We support updating Namecheap dynamic DNS records for individual hosts (based
+upon the value of `hostname -f`). Additionally, all healthy `k3s` primaries
+will compete for a single record defined by `primary.$(hostname -d)`. This is a
+super dumb, hacky workaround that let's us define appropriate hosts for cluster
+ingress.
+
 ## Making boot media
 
 Pop in a flash drive you don't care about and then run the following:
@@ -69,9 +76,11 @@ Pop in a flash drive you don't care about and then run the following:
 ```shell
 sudo \
     SSH_KEY_PATH=$HOME/.ssh/id_rsa.pub \
-    NODE_HOSTNAME=node1337 \
+    NODE_HOSTNAME=node1337.example.com \
     LOGEXPORT_HOST=logsX.papertrailapp.com LOGEXPORT_PORT=XXXXX \
     HEARTBEAT_URL=https://nudge.me/im_alive \
+    NAMECHEAP_DDNS_PASS=foobarbaz \
+    NAMECHEAP_DDNS_INTERFACE=eth0 \
     K3S_DATASTORE_ENDPOINT="see the k3s docs" \
     # Other K3S_* env vars you probably want to set \
     ./build_pxe_stick.sh /dev/sdX
@@ -149,6 +158,11 @@ those, you'll want to:
 
 That'll kick out a URL like `https://heartbeat.uptimerobot.com/BUNCH_OF_CHARS`.
 That's the value for `HEARTBEAT_URL`.
+
+#### `NAMECHEAP_DDNS_PASS` and `NAMECHEAP_DDNS_INTERFACE`
+You can get the DDNS password by following [Namecheap's
+docs](https://www.namecheap.com/support/knowledgebase/article.aspx/595/11/how-do-i-enable-dynamic-dns-for-a-domain).
+The DDNS interface is the interface whose IP we read for the DDNS update.
 
 #### `K3S_DATASTORE_ENDPOINT`
 
