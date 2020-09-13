@@ -42,16 +42,25 @@ either used by external clients or cluster-internal containers.
 papertrail.com has a free tier with 48 hours of search and 7 days of archives.
 
 #### k3s datastore hosting
-Heroku's "Hobby Basic" tier of hosted postgres allows for 10 million rows at
-$9/month. My "this is a single node doing nothing" test hit 3k rows, so
-10 million rows will hopefully be enough headroom. Worst case, the next tier
-$50/month, which will be high enough for me to consider what I want to do
-longer term.
+Spin up a Vultr compute node with Debian or whatever and throw Postgres on it.
+You can get a 1 CPU/1GB RAM/25GB SSD node with automated filesystem backups for
+like $6/month. If you're interested in additional backups, you can use
+Backblaze B2 for cheap backup storage and just throw Postgres dumps there.
+I use a hourly/daily/weekly series of
+[`pg-b2`](https://github.com/mcsaucy/pg-b2) cronjobs, monitored with
+healthchecks.io.
 
-#### Hearbeat monitoring
-You can get some super basic (but functional) heartbeat monitoring with
-UptimeRobot. Unfortunately, heartbeat monitoring is a beta offering and not
-free, but it's like $8/month so /shrug.
+Heroku's "Hobby Basic" tier of hosted postgres allows for 10 million rows at
+$9/month. This seems compelling at first. My "this is a single node doing
+nothing" test hit 3k rows, which seemed promising, but trying to `helm install`
+something hit the hobby tier's 20 connect limit. The next tier is $50/month,
+which was high enough to push me away. Vultr offers 4 CPU/8GB RAM/160GB SSD for
+only like $40/month, so I'll probably build out in that direction if I need to
+grow.
+
+#### Heartbeat monitoring
+You can get some super simple heartbeat monitoring with healthchecks.io. It's
+free as long as you fit within the hobby tier.
 
 ## Making boot media
 
