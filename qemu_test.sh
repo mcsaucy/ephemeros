@@ -5,9 +5,11 @@ if [[ -z "$1" ]]; then
     exit 1
 fi
 
-displaymode="--curses"
+displaymode=()
 if [[ -n "$NO_CURSES" ]]; then
-    displaymode="--vga=virtio"
+    displaymode=(-vga virtio)
+else
+    displaymode=(--curses)
 fi
 
 sudo qemu-system-x86_64 \
@@ -16,5 +18,5 @@ sudo qemu-system-x86_64 \
     -cpu host \
     -hda "$1" \
     -smp 2 -m 8092 \
-    "$displaymode" \
-    -net nic,model=virtio -net user,hostfwd=tcp::2222-:22
+    -net nic,model=virtio -net user,hostfwd=tcp::2222-:22 \
+    "${displaymode[@]}" 
