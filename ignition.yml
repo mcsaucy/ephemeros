@@ -1,3 +1,6 @@
+variant: fcos
+version: 1.1.0
+
 passwd:
   users:
     - name: core
@@ -13,12 +16,9 @@ storage:
       overwrite: true
     - path: "/opt/bin/k3s"
       contents:
-        remote:
-            url: "https://github.com/rancher/k3s/releases/download/v1.18.8%2Bk3s1/k3s"
-            verification:
-                hash:
-                    function: sha512
-                    sum: 1d9d460763784146d0ecfb8ccda26122e8fe5fc1d4e89f5829e6ef8f61a751e44dc62d167baf3abd407561d9a979b50e59805389b01a860f48c2f5641920c5b3
+        source: "https://github.com/rancher/k3s/releases/download/v1.18.8%2Bk3s1/k3s"
+        verification:
+            hash: sha512-1d9d460763784146d0ecfb8ccda26122e8fe5fc1d4e89f5829e6ef8f61a751e44dc62d167baf3abd407561d9a979b50e59805389b01a860f48c2f5641920c5b3
       mode: 0755
       user:
         name: root
@@ -26,8 +26,7 @@ storage:
         name: root
     - path: "/opt/bin/k_params"
       contents:
-        remote:
-            url: "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params"
+        source: "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params"
       mode: 0755
       user:
         name: root
@@ -35,8 +34,7 @@ storage:
         name: root
     - path: "/opt/bin/namecheap_update"
       contents:
-        remote:
-            url: "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
+        source: "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
       mode: 0755
       user:
         name: root
@@ -47,36 +45,40 @@ storage:
       target: "/opt/bin/k3s"
       hard: false
 
-networkd:
-  units:
-    - name: 25-jamesbond.netdev
-      contents: |
-        [NetDev]
-        Name=james
-        Kind=bond
-
-        [Bond]
-        Mode=802.3ad
-        TransmitHashPolicy=layer3+4
-        MIIMonitorSec=1s
-        LACPTransmitRate=fast
-
-    - name: james.network
-      contents: |
-        [Match]
-        Name=eno*
-
-        [Network]
-        Bond=james
-
-    - name: james_dhcp.network
-      contents: |
-        [Match]
-        Name=james
-
-        [Network]
-        DHCP=yes
-
+# TODO(mcsaucy): FCCT doesn't support this and FCOS seems to have gone the
+# route of using NetworkManager, which is configured using flat files, assuming
+# https://dustymabe.com/2020/03/05/network-teaming-using-networkmanager-keyfiles-on-fedora-coreos/
+# is still accurate. So yeah. Fix this.
+# networkd:
+#   units:
+#     - name: 25-jamesbond.netdev
+#       contents: |
+#         [NetDev]
+#         Name=james
+#         Kind=bond
+# 
+#         [Bond]
+#         Mode=802.3ad
+#         TransmitHashPolicy=layer3+4
+#         MIIMonitorSec=1s
+#         LACPTransmitRate=fast
+# 
+#     - name: james.network
+#       contents: |
+#         [Match]
+#         Name=eno*
+# 
+#         [Network]
+#         Bond=james
+# 
+#     - name: james_dhcp.network
+#       contents: |
+#         [Match]
+#         Name=james
+# 
+#         [Network]
+#         DHCP=yes
+# 
 systemd:
   units:
 

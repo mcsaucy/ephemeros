@@ -1,27 +1,6 @@
 {
   "ignition": {
-    "config": {},
-    "security": {
-      "tls": {}
-    },
-    "timeouts": {},
-    "version": "2.3.0"
-  },
-  "networkd": {
-    "units": [
-      {
-        "contents": "[NetDev]\nName=james\nKind=bond\n\n[Bond]\nMode=802.3ad\nTransmitHashPolicy=layer3+4\nMIIMonitorSec=1s\nLACPTransmitRate=fast\n",
-        "name": "25-jamesbond.netdev"
-      },
-      {
-        "contents": "[Match]\nName=eno*\n\n[Network]\nBond=james\n",
-        "name": "james.network"
-      },
-      {
-        "contents": "[Match]\nName=james\n\n[Network]\nDHCP=yes\n",
-        "name": "james_dhcp.network"
-      }
-    ]
+    "version": "3.1.0"
   },
   "passwd": {
     "users": [
@@ -36,17 +15,14 @@
   "storage": {
     "files": [
       {
-        "filesystem": "root",
         "overwrite": true,
         "path": "/etc/selinux/config",
         "contents": {
-          "source": "data:,SELINUX%3Dpermissive%0ASELINUXTYPE%3Dtargeted",
-          "verification": {}
+          "source": "data:,SELINUX%3Dpermissive%0ASELINUXTYPE%3Dtargeted"
         },
         "mode": 420
       },
       {
-        "filesystem": "root",
         "group": {
           "name": "root"
         },
@@ -63,7 +39,6 @@
         "mode": 493
       },
       {
-        "filesystem": "root",
         "group": {
           "name": "root"
         },
@@ -72,13 +47,11 @@
           "name": "root"
         },
         "contents": {
-          "source": "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params",
-          "verification": {}
+          "source": "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params"
         },
         "mode": 493
       },
       {
-        "filesystem": "root",
         "group": {
           "name": "root"
         },
@@ -87,16 +60,15 @@
           "name": "root"
         },
         "contents": {
-          "source": "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh",
-          "verification": {}
+          "source": "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
         },
         "mode": 493
       }
     ],
     "links": [
       {
-        "filesystem": "root",
         "path": "/opt/bin/kubectl",
+        "hard": false,
         "target": "/opt/bin/k3s"
       }
     ]
