@@ -22,7 +22,7 @@ fi
 echo "#!ipxe
 
 dhcp
-set base-url http://stable.release.flatcar-linux.net/amd64-usr/current
+set base-url https://stable.release.flatcar-linux.net/amd64-usr/current
 kernel \${base-url}/flatcar_production_pxe.vmlinuz ${kernel_params[*]}
 initrd \${base-url}/flatcar_production_pxe_image.cpio.gz
 boot"
