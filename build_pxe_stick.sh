@@ -102,6 +102,10 @@ function prep_ipxe() {
         cd "$OUT"
         git clone git://git.ipxe.org/ipxe.git
         cd ipxe/src
+        # enable https because it isn't the 90s anymore
+        sed -i \
+            "s/#undef\\s\\+DOWNLOAD_PROTO_HTTPS/#define DOWNLOAD_PROTO_HTTPS/" \
+            ./config/general.h
     ) >&2
     echo "$OUT/ipxe/src"
 }
