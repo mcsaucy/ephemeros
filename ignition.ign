@@ -75,13 +75,6 @@
           "source": "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
         },
         "mode": 493
-      },
-      {
-        "path": "/etc/profile.d/add_optbin_to_path.sh",
-        "contents": {
-          "source": "data:;base64,aWYgISBbWyAiJFBBVEgiID1+ICI6L29wdC9iaW46IiBdXTsgdGhlbgogIFBBVEg9IiRQQVRIOi9vcHQvYmluOiIKZmkKZXhwb3J0IFBBVEgK"
-        },
-        "mode": 420
       }
     ],
     "links": [
