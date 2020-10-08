@@ -21,7 +21,7 @@ storage:
         inline: "SELINUX=permissive\nSELINUXTYPE=targeted"
       mode: 0644
       overwrite: true
-    - path: "/opt/bin/k3s"
+    - path: "/usr/local/bin/k3s"
       contents:
         source: "https://github.com/rancher/k3s/releases/download/v1.18.8%2Bk3s1/k3s"
         verification:
@@ -31,7 +31,7 @@ storage:
         name: root
       group:
         name: root
-    - path: "/opt/bin/k_params"
+    - path: "/usr/local/bin/k_params"
       contents:
         source: "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params"
       mode: 0755
@@ -39,7 +39,7 @@ storage:
         name: root
       group:
         name: root
-    - path: "/opt/bin/namecheap_update"
+    - path: "/usr/local/bin/namecheap_update"
       contents:
         source: "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
       mode: 0755
@@ -48,8 +48,8 @@ storage:
       group:
         name: root
   links:
-    - path: "/opt/bin/kubectl"
-      target: "/opt/bin/k3s"
+    - path: "/usr/local/bin/kubectl"
+      target: "/usr/local/bin/k3s"
       hard: false
 
 # TODO(mcsaucy): FCCT doesn't support this and FCOS seems to have gone the
@@ -100,7 +100,7 @@ systemd:
         WantedBy=k3s.service
 
         [Service]
-        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/opt/bin/k_params hostname)"'
+        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/usr/local/bin/k_params hostname)"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=30s
@@ -131,7 +131,7 @@ systemd:
         EnvironmentFile=/opt/secrets/k3s_env
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
-        ExecStart=/opt/bin/k3s server
+        ExecStart=/usr/local/bin/k3s server
     - name: logexport.service
       enabled: true
       contents: |
@@ -177,7 +177,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/opt/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '/opt/bin/kubectl get nodes/$(hostname) | grep -q Ready && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "primary.$(hostname -d)"'
+        ExecStart=/bin/sh -c '/usr/local/bin/kubectl get nodes/$(hostname) | grep -q Ready && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "primary.$(hostname -d)"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=1m
@@ -195,7 +195,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/opt/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
+        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
         TimeoutStartSec=0
         Restart=always
         RestartSec=10m
