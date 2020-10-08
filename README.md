@@ -40,6 +40,8 @@ either used by external clients or cluster-internal containers.
 
 #### Log collection
 papertrail.com has a free tier with 48 hours of search and 7 days of archives.
+You can get 1 GB/month, 1 week of search, and 1 year of archives for $7/month
+should you overshoot that.
 
 #### k3s datastore hosting
 Spin up a Vultr compute node with Debian or whatever and throw Postgres on it.
