@@ -8,7 +8,7 @@ passwd:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCgakqOKbhaZe7ku2SOmHCrOCeAx//4PQy/nB6jSqIv94yDcyTcnxlJGhcoWdDFUzesFSYLvO63qgm5oA7ApFw413+R/M4FKuq4afhakSn8srthpW1gwI148hF+a8ugcz6h+COXEzOBdJLE0EUGcvKlI79+oF3h/egoO/2gLH0Pi5q5WQxkNXHBLUhZX4jU6uwS22ot4ThiAFKluB+/Asfvbd8ghZ0RDI6Q7H/yAKMp3E/CgA+xFQoTwybcUMm3e6ACJWD00yRczWapwv9ohaINac0ssym/3bFJZArW7foFgI0pyR56/s/0hWaGnA/nsTTHWs/HQ+324opm/a+908zv"
 storage:
   directories:
-    - path: "/secrets"
+    - path: "/opt/secrets"
       mode: 0700
       user:
         name: root
@@ -112,7 +112,7 @@ systemd:
         Description=Lightweight Kubernetes
         Documentation=https://k3s.io
         After=network-online.target
-        ConditionFileNotEmpty=/secrets/k3s_env
+        ConditionFileNotEmpty=/opt/secrets/k3s_env
 
         [Install]
         WantedBy=multi-user.target
@@ -128,7 +128,7 @@ systemd:
         TimeoutStartSec=0
         Restart=always
         RestartSec=5s
-        EnvironmentFile=/secrets/k3s_env
+        EnvironmentFile=/opt/secrets/k3s_env
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
         ExecStart=/opt/bin/k3s server
@@ -139,10 +139,10 @@ systemd:
         Description=Log Exporter
         After=systemd-journald.service
         Requires=systemd-journald.service
-        ConditionFileNotEmpty=/secrets/logexport_env
+        ConditionFileNotEmpty=/opt/secrets/logexport_env
 
         [Service]
-        EnvironmentFile=/secrets/logexport_env
+        EnvironmentFile=/opt/secrets/logexport_env
         ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${LOGEXPORT_HOST}" "${LOGEXPORT_PORT}"'
         TimeoutStartSec=0
         Restart=on-failure
@@ -156,10 +156,10 @@ systemd:
         [Unit]
         Description=Monitoring Heartbeat Pulse
         Requires=network-online.target
-        ConditionFileNotEmpty=/secrets/heartbeat_env
+        ConditionFileNotEmpty=/opt/secrets/heartbeat_env
 
         [Service]
-        EnvironmentFile=/secrets/heartbeat_env
+        EnvironmentFile=/opt/secrets/heartbeat_env
         ExecStart=/bin/sh -c 'wget --spider "${HEARTBEAT_URL}" >/dev/null 2>&1'
         TimeoutStartSec=0
         Restart=on-failure
@@ -173,10 +173,10 @@ systemd:
         [Unit]
         Description=Set the primary hostname via DDNS
         Requires=network-online.target k3s.service
-        ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+        ConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env
 
         [Service]
-        EnvironmentFile=/secrets/namecheap_ddns_env
+        EnvironmentFile=/opt/secrets/namecheap_ddns_env
         ExecStart=/bin/sh -c '/opt/bin/kubectl get nodes/$(hostname) | grep -q Ready && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "primary.$(hostname -d)"'
         TimeoutStartSec=0
         Restart=on-failure
@@ -191,10 +191,10 @@ systemd:
         Description=Update our host's dynamic DNS record
         After=sethostname.service
         Requires=network-online.target
-        ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+        ConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env
 
         [Service]
-        EnvironmentFile=/secrets/namecheap_ddns_env
+        EnvironmentFile=/opt/secrets/namecheap_ddns_env
         ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
         TimeoutStartSec=0
         Restart=always
@@ -233,15 +233,15 @@ systemd:
         [Install]
         WantedBy=timers.target
 
-    - name: secrets.mount
+    - name: opt/secrets.mount
       enabled: true
       contents: |
         [Unit]
         Description=Secrets
 
         [Mount]
-        What=/dev/disk/by-label/secrets
-        Where=/secrets
+        What=/dev/disk/by-label/opt/secrets
+        Where=/opt/secrets
         Options=ro
         DirectoryMode=0700
 
