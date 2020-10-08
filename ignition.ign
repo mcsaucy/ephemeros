@@ -13,6 +13,18 @@
     ]
   },
   "storage": {
+    "directories": [
+      {
+        "group": {
+          "name": "root"
+        },
+        "path": "/secrets",
+        "user": {
+          "name": "root"
+        },
+        "mode": 448
+      }
+    ],
     "files": [
       {
         "overwrite": true,

@@ -7,6 +7,13 @@ passwd:
       ssh_authorized_keys:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCgakqOKbhaZe7ku2SOmHCrOCeAx//4PQy/nB6jSqIv94yDcyTcnxlJGhcoWdDFUzesFSYLvO63qgm5oA7ApFw413+R/M4FKuq4afhakSn8srthpW1gwI148hF+a8ugcz6h+COXEzOBdJLE0EUGcvKlI79+oF3h/egoO/2gLH0Pi5q5WQxkNXHBLUhZX4jU6uwS22ot4ThiAFKluB+/Asfvbd8ghZ0RDI6Q7H/yAKMp3E/CgA+xFQoTwybcUMm3e6ACJWD00yRczWapwv9ohaINac0ssym/3bFJZArW7foFgI0pyR56/s/0hWaGnA/nsTTHWs/HQ+324opm/a+908zv"
 storage:
+  directories:
+    - path: "/secrets"
+      mode: 0700
+      user:
+        name: root
+      group:
+        name: root
   files:
       # TODO(mcsaucy): this is sad. Stop doing this.
     - path: "/etc/selinux/config"
