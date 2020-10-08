@@ -75,6 +75,41 @@
           "source": "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
         },
         "mode": 493
+      },
+      {
+        "path": "/etc/NetworkManager/system-connections/team_venture.nmconnection",
+        "contents": {
+          "source": "data:;base64,W2Nvbm5lY3Rpb25dCmlkPXRlYW1fdmVudHVyZQp0eXBlPXRlYW0KaW50ZXJmYWNlLW5hbWU9dmVudHVyZQpbdGVhbV0KY29uZmlnPXsicnVubmVyIjogeyJuYW1lIjogImxhY3AifSwgImxpbmtfd2F0Y2giOiB7Im5hbWUiOiAiZXRodG9vbCJ9fQo="
+        },
+        "mode": 384
+      },
+      {
+        "path": "/etc/NetworkManager/system-connections/venture-member-eno1.nmconnection",
+        "contents": {
+          "source": "data:,%5Bconnection%5D%0Aid%3Dventure-member-eno1%0Atype%3Dethernet%0Ainterface-name%3Deno1%0Amaster%3Dventure%0Aslave-type%3Dteam%0A%5Bteam-port%5D%0Aconfig%3D%7B%22prio%22%3A%20100%7D%0A"
+        },
+        "mode": 384
+      },
+      {
+        "path": "/etc/NetworkManager/system-connections/venture-member-eno2.nmconnection",
+        "contents": {
+          "source": "data:,%5Bconnection%5D%0Aid%3Dventure-member-eno2%0Atype%3Dethernet%0Ainterface-name%3Deno2%0Amaster%3Dventure%0Aslave-type%3Dteam%0A%5Bteam-port%5D%0Aconfig%3D%7B%22prio%22%3A%20100%7D%0A"
+        },
+        "mode": 384
+      },
+      {
+        "path": "/etc/NetworkManager/system-connections/venture-member-eno3.nmconnection",
+        "contents": {
+          "source": "data:,%5Bconnection%5D%0Aid%3Dventure-member-eno3%0Atype%3Dethernet%0Ainterface-name%3Deno3%0Amaster%3Dventure%0Aslave-type%3Dteam%0A%5Bteam-port%5D%0Aconfig%3D%7B%22prio%22%3A%20100%7D%0A"
+        },
+        "mode": 384
+      },
+      {
+        "path": "/etc/NetworkManager/system-connections/venture-member-eno4.nmconnection",
+        "contents": {
+          "source": "data:,%5Bconnection%5D%0Aid%3Dventure-member-eno4%0Atype%3Dethernet%0Ainterface-name%3Deno4%0Amaster%3Dventure%0Aslave-type%3Dteam%0A%5Bteam-port%5D%0Aconfig%3D%7B%22prio%22%3A%20100%7D%0A"
+        },
+        "mode": 384
       }
     ],
     "links": [
@@ -108,12 +143,12 @@
         "name": "heartbeat.service"
       },
       {
-        "contents": "[Unit]\nDescription=Set the primary hostname via DDNS\nRequires=network-online.target k3s.service\nConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/opt/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '/usr/local/bin/kubectl get nodes/$(hostname) | grep -q Ready \u0026\u0026 /usr/local/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-james}\" \"primary.$(hostname -d)\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=1m\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Set the primary hostname via DDNS\nRequires=network-online.target k3s.service\nConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/opt/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '/usr/local/bin/kubectl get nodes/$(hostname) | grep -q Ready \u0026\u0026 /usr/local/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-venture}\" \"primary.$(hostname -d)\"'\nTimeoutStartSec=0\nRestart=on-failure\nRestartSec=1m\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
         "name": "primary_ddns.service"
       },
       {
-        "contents": "[Unit]\nDescription=Update our host's dynamic DNS record\nAfter=sethostname.service\nRequires=network-online.target\nConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/opt/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '[ \"$(hostname)\" != localhost ] \u0026\u0026 /usr/local/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-james}\"'\nTimeoutStartSec=0\nRestart=always\nRestartSec=10m\n\n[Install]\nWantedBy=multi-user.target\n",
+        "contents": "[Unit]\nDescription=Update our host's dynamic DNS record\nAfter=sethostname.service\nRequires=network-online.target\nConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env\n\n[Service]\nEnvironmentFile=/opt/secrets/namecheap_ddns_env\nExecStart=/bin/sh -c '[ \"$(hostname)\" != localhost ] \u0026\u0026 /usr/local/bin/namecheap_update \"${NAMECHEAP_DDNS_INTERFACE:-venture}\"'\nTimeoutStartSec=0\nRestart=always\nRestartSec=10m\n\n[Install]\nWantedBy=multi-user.target\n",
         "enabled": true,
         "name": "host_ddns.service"
       },

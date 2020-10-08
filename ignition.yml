@@ -47,45 +47,70 @@ storage:
         name: root
       group:
         name: root
+
+    - path: /etc/NetworkManager/system-connections/team_venture.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=team_venture
+          type=team
+          interface-name=venture
+          [team]
+          config={"runner": {"name": "lacp"}, "link_watch": {"name": "ethtool"}}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno1.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno1
+          type=ethernet
+          interface-name=eno1
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno2.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno2
+          type=ethernet
+          interface-name=eno2
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno3.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno3
+          type=ethernet
+          interface-name=eno3
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno4.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno4
+          type=ethernet
+          interface-name=eno4
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
   links:
     - path: "/usr/local/bin/kubectl"
       target: "/usr/local/bin/k3s"
       hard: false
 
-# TODO(mcsaucy): FCCT doesn't support this and FCOS seems to have gone the
-# route of using NetworkManager, which is configured using flat files, assuming
-# https://dustymabe.com/2020/03/05/network-teaming-using-networkmanager-keyfiles-on-fedora-coreos/
-# is still accurate. So yeah. Fix this.
-# networkd:
-#   units:
-#     - name: 25-jamesbond.netdev
-#       contents: |
-#         [NetDev]
-#         Name=james
-#         Kind=bond
-# 
-#         [Bond]
-#         Mode=802.3ad
-#         TransmitHashPolicy=layer3+4
-#         MIIMonitorSec=1s
-#         LACPTransmitRate=fast
-# 
-#     - name: james.network
-#       contents: |
-#         [Match]
-#         Name=eno*
-# 
-#         [Network]
-#         Bond=james
-# 
-#     - name: james_dhcp.network
-#       contents: |
-#         [Match]
-#         Name=james
-# 
-#         [Network]
-#         DHCP=yes
-# 
 systemd:
   units:
 
@@ -177,7 +202,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/opt/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '/usr/local/bin/kubectl get nodes/$(hostname) | grep -q Ready && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "primary.$(hostname -d)"'
+        ExecStart=/bin/sh -c '/usr/local/bin/kubectl get nodes/$(hostname) | grep -q Ready && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-venture}" "primary.$(hostname -d)"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=1m
@@ -195,7 +220,7 @@ systemd:
 
         [Service]
         EnvironmentFile=/opt/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
+        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-venture}"'
         TimeoutStartSec=0
         Restart=always
         RestartSec=10m
