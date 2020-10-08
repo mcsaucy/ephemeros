@@ -130,7 +130,7 @@
       {
         "contents": "[Unit]\nDescription=Secrets\n\n[Mount]\nWhat=/dev/disk/by-label/opt/secrets\nWhere=/opt/secrets\nOptions=ro\nDirectoryMode=0700\n\n[Install]\nWantedBy=k3s.service\n",
         "enabled": true,
-        "name": "opt/secrets.mount"
+        "name": "secrets.mount"
       }
     ]
   }

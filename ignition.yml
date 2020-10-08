@@ -233,7 +233,7 @@ systemd:
         [Install]
         WantedBy=timers.target
 
-    - name: opt/secrets.mount
+    - name: secrets.mount
       enabled: true
       contents: |
         [Unit]
