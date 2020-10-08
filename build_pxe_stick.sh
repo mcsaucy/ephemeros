@@ -100,11 +100,16 @@ function prep_ipxe() {
     (
         set -e
         cd "$OUT"
-        git clone git://git.ipxe.org/ipxe.git
+        # TODO(mcsaucy): clone from ipxe/ipxe when
+        # https://github.com/ipxe/ipxe/pull/154 is merged.
+        git clone git://github.com/mcsaucy/ipxe.git
         cd ipxe/src
+        # TODO(mcsaucy): just use the default branch
+        # https://github.com/ipxe/ipxe/pull/154 is merged.
+        git checkout selfcross
         # enable https because it isn't the 90s anymore
         sed -i \
-            "s/#undef\\s\\+DOWNLOAD_PROTO_HTTPS/#define DOWNLOAD_PROTO_HTTPS/" \
+            's/#undef\s\+DOWNLOAD_PROTO_HTTPS/#define DOWNLOAD_PROTO_HTTPS/' \
             ./config/general.h
     ) >&2
     echo "$OUT/ipxe/src"
