@@ -6,9 +6,8 @@ running [k3s](https://k3s.io) and logging with
 which also contains a dedicated volume for keeping secrets. *Apply platform
 config changes and updates by rebooting.*
 
-The iPXE script downloads and boots the newest stable release for Flatcar
-Container Linux (RIP CoreOS), which then pulls in the
-[ignition.ign](ignition.ign) file in this repo.
+The iPXE script downloads and boots the newest stable release for Fedora
+CoreOS, which then pulls in the [ignition.ign](ignition.ign) file in this repo.
 
 Since that is publicly visible, we cannot have any secrets kicking around in
 there. But we still need those values to be carried over somehow, so we capture

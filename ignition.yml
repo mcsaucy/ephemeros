@@ -1,9 +1,19 @@
+variant: fcos
+version: 1.1.0
+
 passwd:
   users:
     - name: core
       ssh_authorized_keys:
         - "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCgakqOKbhaZe7ku2SOmHCrOCeAx//4PQy/nB6jSqIv94yDcyTcnxlJGhcoWdDFUzesFSYLvO63qgm5oA7ApFw413+R/M4FKuq4afhakSn8srthpW1gwI148hF+a8ugcz6h+COXEzOBdJLE0EUGcvKlI79+oF3h/egoO/2gLH0Pi5q5WQxkNXHBLUhZX4jU6uwS22ot4ThiAFKluB+/Asfvbd8ghZ0RDI6Q7H/yAKMp3E/CgA+xFQoTwybcUMm3e6ACJWD00yRczWapwv9ohaINac0ssym/3bFJZArW7foFgI0pyR56/s/0hWaGnA/nsTTHWs/HQ+324opm/a+908zv"
 storage:
+  directories:
+    - path: "/opt/secrets"
+      mode: 0700
+      user:
+        name: root
+      group:
+        name: root
   files:
       # TODO(mcsaucy): this is sad. Stop doing this.
     - path: "/etc/selinux/config"
@@ -11,71 +21,95 @@ storage:
         inline: "SELINUX=permissive\nSELINUXTYPE=targeted"
       mode: 0644
       overwrite: true
-    - path: "/opt/bin/k3s"
+    - path: "/usr/local/bin/k3s"
       contents:
-        remote:
-            url: "https://github.com/rancher/k3s/releases/download/v1.18.8%2Bk3s1/k3s"
-            verification:
-                hash:
-                    function: sha512
-                    sum: 1d9d460763784146d0ecfb8ccda26122e8fe5fc1d4e89f5829e6ef8f61a751e44dc62d167baf3abd407561d9a979b50e59805389b01a860f48c2f5641920c5b3
+        source: "https://github.com/rancher/k3s/releases/download/v1.18.8%2Bk3s1/k3s"
+        verification:
+            hash: sha512-1d9d460763784146d0ecfb8ccda26122e8fe5fc1d4e89f5829e6ef8f61a751e44dc62d167baf3abd407561d9a979b50e59805389b01a860f48c2f5641920c5b3
       mode: 0755
       user:
         name: root
       group:
         name: root
-    - path: "/opt/bin/k_params"
+    - path: "/usr/local/bin/k_params"
       contents:
-        remote:
-            url: "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params"
+        source: "https://raw.githubusercontent.com/mcsaucy/k_params/master/k_params"
       mode: 0755
       user:
         name: root
       group:
         name: root
-    - path: "/opt/bin/namecheap_update"
+    - path: "/usr/local/bin/namecheap_update"
       contents:
-        remote:
-            url: "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
+        source: "https://raw.githubusercontent.com/mcsaucy/ddns_scripts/master/namecheap.sh"
       mode: 0755
       user:
         name: root
       group:
         name: root
+
+    - path: /etc/NetworkManager/system-connections/team_venture.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=team_venture
+          type=team
+          interface-name=venture
+          [team]
+          config={"runner": {"name": "lacp"}, "link_watch": {"name": "ethtool"}}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno1.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno1
+          type=ethernet
+          interface-name=eno1
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno2.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno2
+          type=ethernet
+          interface-name=eno2
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno3.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno3
+          type=ethernet
+          interface-name=eno3
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
+    - path: /etc/NetworkManager/system-connections/venture-member-eno4.nmconnection
+      mode: 0600
+      contents:
+        inline: |
+          [connection]
+          id=venture-member-eno4
+          type=ethernet
+          interface-name=eno4
+          master=venture
+          slave-type=team
+          [team-port]
+          config={"prio": 100}
   links:
-    - path: "/opt/bin/kubectl"
-      target: "/opt/bin/k3s"
+    - path: "/usr/local/bin/kubectl"
+      target: "/usr/local/bin/k3s"
       hard: false
-
-networkd:
-  units:
-    - name: 25-jamesbond.netdev
-      contents: |
-        [NetDev]
-        Name=james
-        Kind=bond
-
-        [Bond]
-        Mode=802.3ad
-        TransmitHashPolicy=layer3+4
-        MIIMonitorSec=1s
-        LACPTransmitRate=fast
-
-    - name: james.network
-      contents: |
-        [Match]
-        Name=eno*
-
-        [Network]
-        Bond=james
-
-    - name: james_dhcp.network
-      contents: |
-        [Match]
-        Name=james
-
-        [Network]
-        DHCP=yes
 
 systemd:
   units:
@@ -91,7 +125,7 @@ systemd:
         WantedBy=k3s.service
 
         [Service]
-        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/opt/bin/k_params hostname)"'
+        ExecStart=/bin/bash -c 'hostnamectl set-hostname --static "$(/usr/local/bin/k_params hostname)"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=30s
@@ -103,7 +137,7 @@ systemd:
         Description=Lightweight Kubernetes
         Documentation=https://k3s.io
         After=network-online.target
-        ConditionFileNotEmpty=/secrets/k3s_env
+        ConditionFileNotEmpty=/opt/secrets/k3s_env
 
         [Install]
         WantedBy=multi-user.target
@@ -119,10 +153,10 @@ systemd:
         TimeoutStartSec=0
         Restart=always
         RestartSec=5s
-        EnvironmentFile=/secrets/k3s_env
+        EnvironmentFile=/opt/secrets/k3s_env
         ExecStartPre=-/sbin/modprobe br_netfilter
         ExecStartPre=-/sbin/modprobe overlay
-        ExecStart=/opt/bin/k3s server
+        ExecStart=/usr/local/bin/k3s server
     - name: logexport.service
       enabled: true
       contents: |
@@ -130,10 +164,10 @@ systemd:
         Description=Log Exporter
         After=systemd-journald.service
         Requires=systemd-journald.service
-        ConditionFileNotEmpty=/secrets/logexport_env
+        ConditionFileNotEmpty=/opt/secrets/logexport_env
 
         [Service]
-        EnvironmentFile=/secrets/logexport_env
+        EnvironmentFile=/opt/secrets/logexport_env
         ExecStart=/bin/sh -c 'journalctl -f | ncat --ssl "${LOGEXPORT_HOST}" "${LOGEXPORT_PORT}"'
         TimeoutStartSec=0
         Restart=on-failure
@@ -147,10 +181,10 @@ systemd:
         [Unit]
         Description=Monitoring Heartbeat Pulse
         Requires=network-online.target
-        ConditionFileNotEmpty=/secrets/heartbeat_env
+        ConditionFileNotEmpty=/opt/secrets/heartbeat_env
 
         [Service]
-        EnvironmentFile=/secrets/heartbeat_env
+        EnvironmentFile=/opt/secrets/heartbeat_env
         ExecStart=/bin/sh -c 'wget --spider "${HEARTBEAT_URL}" >/dev/null 2>&1'
         TimeoutStartSec=0
         Restart=on-failure
@@ -164,11 +198,11 @@ systemd:
         [Unit]
         Description=Set the primary hostname via DDNS
         Requires=network-online.target k3s.service
-        ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+        ConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env
 
         [Service]
-        EnvironmentFile=/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '/opt/bin/kubectl get nodes/$(hostname) | grep -q Ready && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}" "primary.$(hostname -d)"'
+        EnvironmentFile=/opt/secrets/namecheap_ddns_env
+        ExecStart=/bin/sh -c '/usr/local/bin/kubectl get nodes/$(hostname) | grep -q Ready && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-venture}" "primary.$(hostname -d)"'
         TimeoutStartSec=0
         Restart=on-failure
         RestartSec=1m
@@ -182,11 +216,11 @@ systemd:
         Description=Update our host's dynamic DNS record
         After=sethostname.service
         Requires=network-online.target
-        ConditionFileNotEmpty=/secrets/namecheap_ddns_env
+        ConditionFileNotEmpty=/opt/secrets/namecheap_ddns_env
 
         [Service]
-        EnvironmentFile=/secrets/namecheap_ddns_env
-        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /opt/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-james}"'
+        EnvironmentFile=/opt/secrets/namecheap_ddns_env
+        ExecStart=/bin/sh -c '[ "$(hostname)" != localhost ] && /usr/local/bin/namecheap_update "${NAMECHEAP_DDNS_INTERFACE:-venture}"'
         TimeoutStartSec=0
         Restart=always
         RestartSec=10m
@@ -231,8 +265,8 @@ systemd:
         Description=Secrets
 
         [Mount]
-        What=/dev/disk/by-label/secrets
-        Where=/secrets
+        What=/dev/disk/by-label/opt/secrets
+        Where=/opt/secrets
         Options=ro
         DirectoryMode=0700
 
