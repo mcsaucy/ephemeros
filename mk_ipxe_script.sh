@@ -8,15 +8,11 @@ if ! KEY=$(< "$key_path"); then
     exit 1
 fi
 
-latest_pxe=https://latest-fcos.herokuapp.com/stable/artifacts/x86_64/metal/pxe
-
 kernel_params=(
-    "coreos.live.rootfs_url=$latest_pxe/rootfs"
-    "ignition.platform.id=metal"
-    "ignition.firstboot"
-    "ignition.config.url=${IGN_PATH:-https://raw.githubusercontent.com/mcsaucy/ephemeros/fcos/ignition.ign}"
+    "initrd=flatcar_production_pxe_image.cpio.gz"
+    "flatcar.first_boot=1"
     "sshkey=\"$KEY\""
-    "systemd.unified_cgroup_hierarchy=0"
+    "ignition.config.url=${IGN_PATH:-https://raw.githubusercontent.com/mcsaucy/ephemeros/master/ignition.ign}"
 )
 
 if [[ -n "$NODE_HOSTNAME" ]]; then
@@ -26,7 +22,7 @@ fi
 echo "#!ipxe
 
 dhcp
-set base-url $latest_pxe
-kernel \${base-url}/kernel ${kernel_params[*]}
-initrd \${base-url}/initramfs
+set base-url https://stable.release.flatcar-linux.net/amd64-usr/current
+kernel \${base-url}/flatcar_production_pxe.vmlinuz ${kernel_params[*]}
+initrd \${base-url}/flatcar_production_pxe_image.cpio.gz
 boot"

@@ -6,8 +6,9 @@ running [k3s](https://k3s.io) and logging with
 which also contains a dedicated volume for keeping secrets. *Apply platform
 config changes and updates by rebooting.*
 
-The iPXE script downloads and boots the newest stable release for Fedora
-CoreOS, which then pulls in the [ignition.ign](ignition.ign) file in this repo.
+The iPXE script downloads and boots the newest stable release for Flatcar
+Container Linux (RIP CoreOS), which then pulls in the
+[ignition.ign](ignition.ign) file in this repo.
 
 Since that is publicly visible, we cannot have any secrets kicking around in
 there. But we still need those values to be carried over somehow, so we capture
@@ -39,8 +40,6 @@ either used by external clients or cluster-internal containers.
 
 #### Log collection
 papertrail.com has a free tier with 48 hours of search and 7 days of archives.
-You can get 1 GB/month, 1 week of search, and 1 year of archives for $7/month
-should you overshoot that.
 
 #### k3s datastore hosting
 Spin up a Vultr compute node with Debian or whatever and throw Postgres on it.
